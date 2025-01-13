@@ -15,5 +15,20 @@ export const authOptions: NextAuthOptions = {
             clientSecret: clientSecret,
         })
     ],
+    pages: {
+    signIn: '/auth/signin', // Specify the custom sign-in page
+  },
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token
+      }
+      return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken
+      return session
+    },
+  },
 }; 
    
