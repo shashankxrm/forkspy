@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRequireAuth } from '../hooks/useRequireAuth';
 import Header from '../components/Header';
 
 interface Repository {
@@ -9,22 +10,25 @@ interface Repository {
 }
 
 export default function Dashboard() {
+  const session = useRequireAuth();
   const [repoUrl, setRepoUrl] = useState("");
   const [repositories, setRepositories] = useState<Repository[]>([]);
 
-  useEffect(() => {
-    const fetchRepositories = async () => {
-      const response = await fetch("/api/repos/get");
-      if (!response.ok) {
-        console.error("Failed to fetch repositories");
-        return;
-      }
-      const data = await response.json();
-      setRepositories(data);
-    };
+  const fetchRepositories = async () => {
+    const response = await fetch("/api/repos/get");
+    if (!response.ok) {
+      console.error("Failed to fetch repositories");
+      return;
+    }
+    const data = await response.json();
+    setRepositories(data);
+  };
 
-    fetchRepositories();
-  }, []);
+  useEffect(() => {
+    if (session) {
+      fetchRepositories();
+    }
+  }, [session]);
 
   const addRepository = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +58,10 @@ export default function Dashboard() {
       alert("An error occurred while adding the repository.");
     }
   };
+
+  if (!session) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="p-6">
