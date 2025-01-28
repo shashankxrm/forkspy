@@ -1,6 +1,5 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import { Session } from "next-auth";
 
 // Extend the default Session type
 interface CustomSession extends Session {
@@ -32,15 +31,15 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        token.accessToken = account.access_token
+        token.accessToken = account.access_token;
       }
-      return token
+      return token;
     },
     async session({ session, token }): Promise<CustomSession> {
       return {
         ...session,
-        accessToken: token.accessToken as string
-      }
+        accessToken: token.accessToken as string,
+      };
     },
   },
 };
