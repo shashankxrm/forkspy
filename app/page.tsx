@@ -1,9 +1,98 @@
 "use client";
-import AuthButton from "@/components/AuthButton";
-export default function Home() {
-  
+
+import { useEffect, useState } from "react";
+import Header from '../components/Header';
+
+interface Repository {
+  _id: string;
+  repoUrl: string;
+}
+
+export default function Dashboard() {
+  const [repoUrl, setRepoUrl] = useState("");
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+
+  useEffect(() => {
+    const fetchRepositories = async () => {
+      const response = await fetch("/api/repos/get");
+      if (!response.ok) {
+        console.error("Failed to fetch repositories");
+        return;
+      }
+      const data = await response.json();
+      setRepositories(data);
+    };
+
+    fetchRepositories();
+  }, []);
+
+  const addRepository = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/repos/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ repoUrl }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error adding repository:", errorData);
+        alert(`Failed to add repository: ${errorData.error}`);
+        return;
+      }
+
+      const data = await response.json();
+      alert("Repository added successfully!");
+      console.log("Added Repository:", data);
+      fetchRepositories(); // Refresh the list
+      setRepoUrl(""); // Reset the input field
+    } catch (error) {
+      console.error("Error adding repository:", error);
+      alert("An error occurred while adding the repository.");
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <AuthButton />
-    </div> );
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+        <Header />
+      </div>
+
+      <form onSubmit={addRepository} className="flex gap-2 mb-6">
+        <input
+          type="text"
+          placeholder="Enter GitHub repository URL"
+          value={repoUrl}
+          onChange={(e) => setRepoUrl(e.target.value)}
+          className="border p-2 flex-1 rounded"
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Add Repository
+        </button>
+      </form>
+
+      <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
+      <ul className="list-disc pl-5">
+        {repositories.map((repo) => (
+          <li key={repo._id}>
+            <a
+              href={repo.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500"
+            >
+              {repo.repoUrl}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
