@@ -13,6 +13,11 @@ export const authOptions: NextAuthOptions = {
         GithubProvider({
             clientId: clientId,
             clientSecret: clientSecret,
+            authorization: {
+              params: {
+                prompt: 'select_account',
+              }
+            }
         })
     ],
     pages: {

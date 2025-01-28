@@ -25,7 +25,7 @@ export default function SignIn() {
       {Object.values(providers).map((provider) => (
         <div key={provider.name}>
           <button
-            onClick={() => signIn(provider.id, { callbackUrl: '/' })}
+            onClick={() => signIn(provider.id, { callbackUrl: '/', prompt: 'login' })}
             className="bg-blue-500 text-white p-2 rounded"
           >
             Sign in with {provider.name}
