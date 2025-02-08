@@ -31,7 +31,11 @@ export async function POST(req: NextRequest) {
     const trackedRepo = await db.collection('repositories').findOne({
       repoUrl: originalRepo
     });
-    console.log('Found tracked repo:', trackedRepo);
+    console.log('Found tracked repo:', {
+      repoUrl: trackedRepo?.repoUrl,
+      userEmail: trackedRepo?.userEmail,
+      webhookId: trackedRepo?.webhookId
+    });
 
     if (!trackedRepo) {
       console.log('No subscribers found for repository:', originalRepo);
@@ -42,7 +46,11 @@ export async function POST(req: NextRequest) {
     const user = await db.collection('users').findOne({
       email: trackedRepo.userEmail
     });
-    console.log('Found user:', user ? { email: user.email } : 'No user found');
+    console.log('Found user details:', {
+      searchEmail: trackedRepo.userEmail,
+      foundEmail: user?.email,
+      emailMatch: user?.email === trackedRepo.userEmail
+    });
 
     if (!user) {
       console.log('User not found for email:', trackedRepo.userEmail);
