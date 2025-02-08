@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
-          scope: 'read:user user:email repo admin:repo_hook',
+          scope: 'read:user user:email repo admin:repo_hook write:repo_hook',
         },
       },
     }),

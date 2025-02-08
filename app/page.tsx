@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
 
   const fetchRepositories = async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
@@ -25,7 +26,7 @@ export default function Dashboard() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.accessToken}`,
+          'Authorization': `token ${session.accessToken}`,
         },
         cache: 'no-store',
       });
@@ -71,7 +72,7 @@ export default function Dashboard() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${session.accessToken}`,
+          'Authorization': `token ${session.accessToken}`,
         },
         body: JSON.stringify({ repoUrl }),
       });
@@ -87,6 +88,32 @@ export default function Dashboard() {
     } catch (error) {
       setError("Failed to add repository");
       console.error("Error adding repository:", error);
+    }
+  };
+
+  const simulateFork = async (repoUrl: string) => {
+    try {
+      setTestLoading(true);
+      const response = await fetch("/api/test/simulate-fork", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ repoUrl }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error);
+        return;
+      }
+
+      alert("Fork event simulated! Check your email.");
+    } catch (error) {
+      console.error("Error simulating fork:", error);
+      setError("Failed to simulate fork event");
+    } finally {
+      setTestLoading(false);
     }
   };
 
@@ -128,16 +155,18 @@ export default function Dashboard() {
       <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
       <ul className="list-disc pl-5">
         {repositories.map((repo) => (
-          <li key={repo._id}>
-            <a
-              href={repo.repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500"
-            >
-              {repo.repoUrl}
-            </a>
-          </li>
+          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow">
+            <p className="text-lg font-medium">{repo.repoUrl}</p>
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={() => simulateFork(repo.repoUrl)}
+                disabled={testLoading}
+                className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:opacity-50"
+              >
+                {testLoading ? "Simulating..." : "Test Fork Notification"}
+              </button>
+            )}
+          </div>
         ))}
       </ul>
     </div>
