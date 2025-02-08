@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
           active: true,
           events: ['fork'],
           config: {
-            url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook`,
+            url: `https://${process.env.NEXT_PUBLIC_APP_URL?.replace('http://', '').replace('https://', '')}/api/webhook`,
             content_type: 'json',
             insecure_ssl: '0'
           }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
           statusText: webhookResponse.statusText,
           error: error,
           repoFullName: repoFullName,
-          webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook`
+          webhookUrl: `https://${process.env.NEXT_PUBLIC_APP_URL?.replace('http://', '').replace('https://', '')}/api/webhook`
         });
         return NextResponse.json({ 
           error: "Failed to set up webhook: " + (error.message || JSON.stringify(error)),

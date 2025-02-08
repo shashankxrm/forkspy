@@ -7,6 +7,9 @@ const dbName = "forkspy";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
+  console.log('Webhook received - Method:', req.method);
+  console.log('Headers:', Object.fromEntries(req.headers.entries()));
+  
   try {
     const payload = await req.json();
     console.log('Received webhook payload:', payload);
