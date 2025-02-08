@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import { MongoClient } from "mongodb";
 
 const clientId = process.env.GITHUB_ID;
 const clientSecret = process.env.GITHUB_SECRET;
@@ -29,6 +30,36 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
+    async signIn({ user}) {
+      if (!user.email) return false;
+      
+      const client = new MongoClient(process.env.MONGO_URI!);
+      try {
+        await client.connect();
+        const db = client.db("forkspy");
+        
+        // Upsert the user
+        await db.collection("users").updateOne(
+          { email: user.email },
+          { 
+            $set: { 
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              lastSignIn: new Date()
+            }
+          },
+          { upsert: true }
+        );
+        
+        return true;
+      } catch (error) {
+        console.error('Error saving user:', error);
+        return false;
+      } finally {
+        await client.close();
+      }
+    },
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
