@@ -7,15 +7,17 @@ const dbName = "forkspy";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
-  console.log('Webhook received - Method:', req.method);
+  console.log('========= WEBHOOK EVENT RECEIVED =========');
+  console.log('Method:', req.method);
   console.log('Headers:', Object.fromEntries(req.headers.entries()));
   
   try {
     const payload = await req.json();
-    console.log('Received webhook payload:', payload);
+    console.log('Webhook Payload:', JSON.stringify(payload, null, 2));
     
     // Verify that this is a fork event
     if (payload.action !== 'created' || !payload.forkee) {
+      console.log('Not a fork event, ignoring');
       return NextResponse.json({ status: 'ignored', reason: 'Not a fork event' });
     }
 
@@ -29,8 +31,10 @@ export async function POST(req: NextRequest) {
     const trackedRepo = await db.collection('repositories').findOne({
       repoUrl: originalRepo
     });
+    console.log('Found tracked repo:', trackedRepo);
 
     if (!trackedRepo) {
+      console.log('No subscribers found for repository:', originalRepo);
       return NextResponse.json({ status: 'no_subscribers', repository: originalRepo });
     }
 
@@ -38,8 +42,10 @@ export async function POST(req: NextRequest) {
     const user = await db.collection('users').findOne({
       email: trackedRepo.userEmail
     });
+    console.log('Found user:', user ? { email: user.email } : 'No user found');
 
     if (!user) {
+      console.log('User not found for email:', trackedRepo.userEmail);
       return NextResponse.json({ status: 'user_not_found', email: trackedRepo.userEmail });
     }
 
@@ -51,6 +57,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 'email_error', error: 'Email service not configured' });
       }
       
+      console.log('Sending email with Resend...');
       const emailResponse = await resend.emails.send({
         from: 'ForkSpy <onboarding@resend.dev>',
         to: user.email,
