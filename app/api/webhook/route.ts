@@ -46,8 +46,13 @@ export async function POST(req: NextRequest) {
     // Send email notification
     console.log('Attempting to send email to:', user.email);
     try {
+      if (!process.env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY is not set');
+        return NextResponse.json({ status: 'email_error', error: 'Email service not configured' });
+      }
+      
       const emailResponse = await resend.emails.send({
-        from: 'ForkSpy <notifications@forkspy.com>',
+        from: 'ForkSpy <onboarding@resend.dev>',
         to: user.email,
         subject: `New Fork Alert: ${originalRepo}`,
         html: `
