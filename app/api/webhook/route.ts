@@ -13,11 +13,12 @@ export async function POST(req: NextRequest) {
   
   try {
     const payload = await req.json();
-    console.log('Webhook Payload:', JSON.stringify(payload, null, 2));
+    console.log('Webhook Event Type:', payload.event || payload.action);
+    console.log('Full Payload:', JSON.stringify(payload, null, 2));
     
     // Verify that this is a fork event
-    if (payload.action !== 'created' || !payload.forkee) {
-      console.log('Not a fork event, ignoring');
+    if (!payload.forkee) {
+      console.log('Not a fork event - missing forkee data');
       return NextResponse.json({ status: 'ignored', reason: 'Not a fork event' });
     }
 
