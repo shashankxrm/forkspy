@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       });
       
       const emailResponse = await resend.emails.send({
-        from: 'ForkSpy <onboarding@resend.dev>',
+        from: 'ForkSpy <notifications@updates.shashankxrm.me>',
         to: user.email,
         subject: `New Fork Alert: ${originalRepo}`,
         html: `
