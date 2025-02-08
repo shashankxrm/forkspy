@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken
+      session.accessToken = token.accessToken as string
       return session
     },
   },
