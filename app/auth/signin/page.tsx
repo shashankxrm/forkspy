@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProviders, signIn, ClientSafeProvider, LiteralUnion } from "next-auth/react";
-import { BuiltInProviderType } from "next-auth/providers";
+import { BuiltInProviderType } from "next-auth";
 
 export default function SignIn() {
   const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null>(null);
