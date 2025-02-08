@@ -66,7 +66,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 'email_error', error: 'Email service not configured' });
       }
       
-      console.log('Sending email with Resend...');
+      console.log('RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
+      console.log('Preparing email with data:', {
+        to: user.email,
+        subject: `New Fork Alert: ${originalRepo}`,
+        repository: originalRepo,
+        forkedBy: payload.sender.login,
+        forkUrl: payload.forkee.html_url
+      });
+      
       const emailResponse = await resend.emails.send({
         from: 'ForkSpy <onboarding@resend.dev>',
         to: user.email,
@@ -83,12 +91,24 @@ export async function POST(req: NextRequest) {
           <p>View the fork: <a href="${payload.forkee.html_url}">${payload.forkee.html_url}</a></p>
         `
       });
+      console.log('Email Response:', emailResponse);
       console.log('Email sent successfully:', emailResponse);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to send email:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? { name: error.name, message: error.message, stack: error.stack }
+        : { name: 'UnknownError', message: String(error), stack: undefined };
+      
+      console.error('Error details:', errorMessage);
+      
       return NextResponse.json({ 
         status: 'email_error', 
-        error: error instanceof Error ? error.message : 'An unknown error occurred'
+        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        errorDetails: {
+          name: errorMessage.name,
+          message: errorMessage.message
+        }
       });
     }
 
