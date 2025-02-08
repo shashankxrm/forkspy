@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [testLoading, setTestLoading] = useState(false);
+  // const [testLoading, setTestLoading] = useState(false);
 
   const fetchRepositories = async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
@@ -91,31 +91,31 @@ export default function Dashboard() {
     }
   };
 
-  const simulateFork = async (repoUrl: string) => {
-    try {
-      setTestLoading(true);
-      const response = await fetch("/api/test/simulate-fork", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ repoUrl }),
-      });
+  // const simulateFork = async (repoUrl: string) => {
+  //   try {
+  //     setTestLoading(true);
+  //     const response = await fetch("/api/test/simulate-fork", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ repoUrl }),
+  //     });
 
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.error);
-        return;
-      }
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       setError(data.error);
+  //       return;
+  //     }
 
-      alert("Fork event simulated! Check your email.");
-    } catch (error) {
-      console.error("Error simulating fork:", error);
-      setError("Failed to simulate fork event");
-    } finally {
-      setTestLoading(false);
-    }
-  };
+  //     alert("Fork event simulated! Check your email.");
+  //   } catch (error) {
+  //     console.error("Error simulating fork:", error);
+  //     setError("Failed to simulate fork event");
+  //   } finally {
+  //     setTestLoading(false);
+  //   }
+  // };
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
@@ -142,7 +142,7 @@ export default function Dashboard() {
           placeholder="Enter GitHub repository URL"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
-          className="border p-2 flex-1 rounded"
+          className="border p-2 flex-1 rounded text-black"
         />
         <button
           type="submit"
@@ -155,17 +155,17 @@ export default function Dashboard() {
       <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
       <ul className="list-disc pl-5">
         {repositories.map((repo) => (
-          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow">
+          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow text-black">
             <p className="text-lg font-medium">{repo.repoUrl}</p>
-            {process.env.NODE_ENV === 'development' && (
-              <button
-                onClick={() => simulateFork(repo.repoUrl)}
-                disabled={testLoading}
-                className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:opacity-50"
-              >
-                {testLoading ? "Simulating..." : "Test Fork Notification"}
-              </button>
-            )}
+            {/* {process.env.NODE_ENV === 'development' && (
+              // <button
+              //   onClick={() => simulateFork(repo.repoUrl)}
+              //   disabled={testLoading}
+              //   className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:opacity-50"
+              // >
+              //   {testLoading ? "Simulating..." : "Test Fork Notification"}
+              // </button>
+            )} */}
           </div>
         ))}
       </ul>
