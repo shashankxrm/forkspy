@@ -1,4 +1,4 @@
-import type {NextAuthOptions} from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 
 const clientId = process.env.GITHUB_ID;
@@ -9,31 +9,40 @@ if (!clientId || !clientSecret) {
 }
 
 export const authOptions: NextAuthOptions = {
-    providers: [
-        GithubProvider({
-            clientId: clientId,
-            clientSecret: clientSecret,
-            authorization: {
-              params: {
-                prompt: 'select_account',
-              }
-            }
-        })
-    ],
-    pages: {
-    signIn: '/auth/signin', // Specify the custom sign-in page
+  providers: [
+    GithubProvider({
+      clientId: clientId,
+      clientSecret: clientSecret,
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: 'read:user user:email repo admin:repo_hook',
+        },
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  pages: {
+    signIn: '/auth/signin',
   },
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        token.accessToken = account.access_token
+        token.accessToken = account.access_token;
+        token.provider = account.provider;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken as string
-      return session
+      if (session.user) {
+        session.accessToken = token.accessToken as string;
+        session.provider = token.provider as string;
+      }
+      return session;
     },
   },
-}; 
-   
+  debug: process.env.NODE_ENV === 'development',
+};

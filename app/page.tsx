@@ -10,57 +10,96 @@ interface Repository {
 }
 
 export default function Dashboard() {
-  const session = useRequireAuth();
+  const { data: session, status } = useRequireAuth();
   const [repoUrl, setRepoUrl] = useState("");
   const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchRepositories = async () => {
-    const response = await fetch("/api/repos/get");
-    if (!response.ok) {
-      console.error("Failed to fetch repositories");
-      return;
+    if (status !== 'authenticated' || !session?.accessToken) return;
+    
+    try {
+      setError(null);
+      const response = await fetch("/api/repos/get", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.accessToken}`,
+        },
+        cache: 'no-store',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error);
+        if (response.status === 401) {
+          console.log("Session status:", status);
+          console.log("Session data:", session);
+        }
+        return;
+      }
+      const data = await response.json();
+      setRepositories(data);
+    } catch (error) {
+      setError("Failed to fetch repositories");
+      console.error("Error fetching repositories:", error);
+    } finally {
+      setLoading(false);
     }
-    const data = await response.json();
-    setRepositories(data);
   };
 
   useEffect(() => {
-    if (session) {
+    if (status === 'authenticated' && session?.user && session?.accessToken) {
       fetchRepositories();
+    } else if (status === 'unauthenticated') {
+      setLoading(false);
+      setError("Please sign in to view repositories");
     }
-  }, [session]);
+  }, [status, session]);
 
   const addRepository = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status !== 'authenticated' || !session?.accessToken) {
+      setError("Please sign in to add repositories");
+      return;
+    }
+
     try {
+      setError(null);
       const response = await fetch("/api/repos/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${session.accessToken}`,
         },
         body: JSON.stringify({ repoUrl }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error adding repository:", errorData);
-        alert(`Failed to add repository: ${errorData.error}`);
+        setError(errorData.error);
         return;
       }
 
-      const data = await response.json();
-      alert("Repository added successfully!");
-      console.log("Added Repository:", data);
-      fetchRepositories(); // Refresh the list
-      setRepoUrl(""); // Reset the input field
+      setRepoUrl("");
+      fetchRepositories();
     } catch (error) {
+      setError("Failed to add repository");
       console.error("Error adding repository:", error);
-      alert("An error occurred while adding the repository.");
     }
   };
 
-  if (!session) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
   }
 
   return (

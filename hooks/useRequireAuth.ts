@@ -3,14 +3,14 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export const useRequireAuth = () => {
-  const { data: session, status } = useSession();
+  const session = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (session.status === 'unauthenticated') {
       router.push('/auth/signin');
     }
-  }, [status, router]);
+  }, [session.status, router]);
 
   return session;
 };
