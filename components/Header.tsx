@@ -21,7 +21,11 @@ export function Header() {
           <div className="w-full flex-1 md:w-auto md:flex-none">{/* You can add a search input here if needed */}</div>
           <nav className="flex items-center">
             {session?.user ? (
-              <ProfileMenu user={session.user} onSignOut={() => signOut()} />
+              <ProfileMenu user={{
+                name: session.user.name || "User",
+                email: session.user.email || "No email",
+                image: session.user.image || ""
+              }} onSignOut={() => signOut()} />
             ) : (
               <Link href="/api/auth/signin" className="transition-colors hover:text-foreground/80 text-foreground">
                 Sign In
