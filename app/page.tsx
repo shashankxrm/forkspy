@@ -142,7 +142,7 @@ export default function Dashboard() {
           placeholder="Enter GitHub repository URL"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
-          className="border p-2 flex-1 rounded text-black"
+          className="border p-2 flex-1 rounded text-black dark:text-white "
         />
         <button
           type="submit"
