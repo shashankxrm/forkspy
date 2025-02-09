@@ -43,40 +43,71 @@ export async function DELETE(req: NextRequest) {
         
         if (!owner || !repoName) {
           console.error('Invalid repository format:', repo.repoUrl);
-          return NextResponse.json({ error: "Invalid repository format" }, { status: 400 });
-        }
-
-        const deleteWebhookUrl = `https://api.github.com/repos/${owner}/${repoName}/hooks/${repo.webhookId}`;
-        
-        const response = await fetch(deleteWebhookUrl, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
-          }
-        });
-
-        // Log the response for debugging
-        if (!response.ok && response.status !== 404) {
-          const errorText = await response.text();
-          console.error('Failed to delete webhook:', {
-            status: response.status,
-            statusText: response.statusText,
-            error: errorText,
-            url: deleteWebhookUrl
+          // Continue with repository deletion even if webhook deletion fails
+        } else {
+          console.log('Attempting to delete webhook:', {
+            owner,
+            repoName,
+            webhookId: repo.webhookId,
+            repoUrl: repo.repoUrl
           });
-          return NextResponse.json({ 
-            error: "Failed to delete webhook",
-            details: `Status: ${response.status} - ${errorText}`
-          }, { status: 500 });
+
+          const deleteWebhookUrl = `https://api.github.com/repos/${owner}/${repoName}/hooks/${repo.webhookId}`;
+          
+          // First, try to get the webhook to verify it exists
+          const getResponse = await fetch(deleteWebhookUrl, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          });
+
+          if (getResponse.status === 404) {
+            console.log('Webhook not found - it may have been deleted already:', deleteWebhookUrl);
+            // Webhook doesn't exist, continue with repo deletion
+            return;
+          }
+
+          if (!getResponse.ok) {
+            const errorText = await getResponse.text();
+            console.error('Failed to verify webhook:', {
+              status: getResponse.status,
+              statusText: getResponse.statusText,
+              error: errorText,
+              url: deleteWebhookUrl
+            });
+            throw new Error(`Failed to verify webhook: ${errorText}`);
+          }
+
+          // If webhook exists, delete it
+          const deleteResponse = await fetch(deleteWebhookUrl, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          });
+
+          if (!deleteResponse.ok && deleteResponse.status !== 404) {
+            const errorText = await deleteResponse.text();
+            console.error('Failed to delete webhook:', {
+              status: deleteResponse.status,
+              statusText: deleteResponse.statusText,
+              error: errorText,
+              url: deleteWebhookUrl,
+              token: process.env.GITHUB_ACCESS_TOKEN ? 'Token exists' : 'No token found'
+            });
+            throw new Error(`Failed to delete webhook: ${errorText}`);
+          }
+
+          console.log('Successfully processed webhook deletion request');
         }
       } catch (error) {
         console.error('Error during webhook deletion:', error);
-        return NextResponse.json({ 
-          error: "Failed to delete webhook",
-          details: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
+        // Continue with repository deletion even if webhook deletion fails
       }
     }
 
