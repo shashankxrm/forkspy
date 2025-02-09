@@ -37,20 +37,46 @@ export async function DELETE(req: NextRequest) {
 
     // Delete the webhook from GitHub if it exists
     if (repo.webhookId) {
-      const [owner, repoName] = repo.repoUrl.split('/');
-      const deleteWebhookUrl = `https://api.github.com/repos/${owner}/${repoName}/hooks/${repo.webhookId}`;
-      
-      const response = await fetch(deleteWebhookUrl, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json'
+      try {
+        // Extract owner and repo name from the repo URL (format: username/reponame)
+        const [owner, repoName] = repo.repoUrl.split('/');
+        
+        if (!owner || !repoName) {
+          console.error('Invalid repository format:', repo.repoUrl);
+          return NextResponse.json({ error: "Invalid repository format" }, { status: 400 });
         }
-      });
 
-      if (!response.ok && response.status !== 404) {
-        console.error('Failed to delete webhook:', await response.text());
-        return NextResponse.json({ error: "Failed to delete webhook" }, { status: 500 });
+        const deleteWebhookUrl = `https://api.github.com/repos/${owner}/${repoName}/hooks/${repo.webhookId}`;
+        
+        const response = await fetch(deleteWebhookUrl, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        });
+
+        // Log the response for debugging
+        if (!response.ok && response.status !== 404) {
+          const errorText = await response.text();
+          console.error('Failed to delete webhook:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText,
+            url: deleteWebhookUrl
+          });
+          return NextResponse.json({ 
+            error: "Failed to delete webhook",
+            details: `Status: ${response.status} - ${errorText}`
+          }, { status: 500 });
+        }
+      } catch (error) {
+        console.error('Error during webhook deletion:', error);
+        return NextResponse.json({ 
+          error: "Failed to delete webhook",
+          details: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
       }
     }
 
