@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRequireAuth } from '../hooks/useRequireAuth';
-import Header from '../components/Header';
+import { Header } from '../components/Header';
+
 
 interface Repository {
   _id: string;
@@ -132,7 +133,6 @@ export default function Dashboard() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
         <Header />
       </div>
 

@@ -1,26 +1,35 @@
-import React from 'react'
-import { signIn, signOut, useSession } from 'next-auth/react';
+import Link from "next/link"
+import { useSession, signOut } from "next-auth/react"
+import { ProfileMenu } from "./Profile-menu"
 
+export function Header() {
+  const { data: session } = useSession()
 
-const Header = () => {
-    const { data: session } = useSession();
   return (
-    <div className="mt-1 flex flex-row justify-end">
-        <div>
-            {session?.user?.email ? (
-            <>
-            Signed in as {session.user.email} <br />
-            <button onClick={() => signOut()}>Sign out</button>
-            </>
-        ) : (
-            <>
-            Not signed in <br />
-            <button onClick={() => signIn()}>Sign in</button>
-            </>
-        )}
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground text-xl">
+              Dashboard
+            </Link>
+          </nav>
         </div>
-    </div>
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">{/* You can add a search input here if needed */}</div>
+          <nav className="flex items-center">
+            {session?.user ? (
+              <ProfileMenu user={session.user} onSignOut={() => signOut()} />
+            ) : (
+              <Link href="/api/auth/signin" className="transition-colors hover:text-foreground/80 text-foreground">
+                Sign In
+              </Link>
+            )}
+          </nav>
+        </div>
+      </div>
+    </header>
   )
 }
-
-export default Header
