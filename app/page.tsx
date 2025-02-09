@@ -155,17 +155,33 @@ export default function Dashboard() {
       <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
       <ul className="list-disc pl-5">
         {repositories.map((repo) => (
-          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow text-black">
+          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow text-black flex justify-between items-center">
             <p className="text-lg font-medium">{repo.repoUrl}</p>
-            {/* {process.env.NODE_ENV === 'development' && (
-              // <button
-              //   onClick={() => simulateFork(repo.repoUrl)}
-              //   disabled={testLoading}
-              //   className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:opacity-50"
-              // >
-              //   {testLoading ? "Simulating..." : "Test Fork Notification"}
-              // </button>
-            )} */}
+            <button
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to stop tracking this repository?')) {
+                  try {
+                    const response = await fetch(`/api/repos/delete?repoId=${repo._id}`, {
+                      method: 'DELETE',
+                    });
+                    
+                    if (!response.ok) {
+                      const error = await response.json();
+                      throw new Error(error.error || 'Failed to delete repository');
+                    }
+                    
+                    // Remove the repository from the local state
+                    setRepositories(repositories.filter(r => r._id !== repo._id));
+                  } catch (error) {
+                    console.error('Error deleting repository:', error);
+                    alert('Failed to delete repository. Please try again.');
+                  }
+                }
+              }}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </ul>
