@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 import Provider from "@/components/Provider";
 import UnderConstruction from '../components/under-construction';
+import { ThemeProvider } from "next-themes";
+import { ModeToggle } from '../components/ModeToggle';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ForkSpy",
@@ -26,12 +19,21 @@ export default function RootLayout({
 }>) {
   return (
     <Provider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <UnderConstruction />
-          {children}
+      <html lang="en" suppressHydrationWarning>
+        <body>
+            <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            >
+            <UnderConstruction />
+            <div style={{ position: 'fixed', bottom: '10px', right: '10px', zIndex: 1000 }}>
+              <ModeToggle />
+            </div>
+            {children}
+            </ThemeProvider>
+          
         </body>
       </html>
     </Provider>
