@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRequireAuth } from '../hooks/useRequireAuth';
-import { Header } from '../components/Header';
-
+import {Header} from '../components/Header';
+import { GitHubRepoCard } from '../components/github-repo-card';
 
 interface Repository {
   _id: string;
@@ -16,7 +16,6 @@ export default function Dashboard() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [testLoading, setTestLoading] = useState(false);
 
   const fetchRepositories = async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
@@ -92,31 +91,37 @@ export default function Dashboard() {
     }
   };
 
-  // const simulateFork = async (repoUrl: string) => {
-  //   try {
-  //     setTestLoading(true);
-  //     const response = await fetch("/api/test/simulate-fork", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ repoUrl }),
-  //     });
+  const handleTrackToggle = async (repoId: string, isTracked: boolean) => {
+    if (status !== 'authenticated' || !session?.accessToken) {
+      setError("Please sign in to manage repositories");
+      return;
+    }
 
-  //     const data = await response.json();
-  //     if (!response.ok) {
-  //       setError(data.error);
-  //       return;
-  //     }
+    try {
+      setError(null);
+      const response = await fetch(isTracked 
+        ? `/api/repos/delete?repoId=${repoId}` 
+        : '/api/repos/add', {
+        method: isTracked ? 'DELETE' : 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `token ${session.accessToken}`,
+        },
+        body: isTracked ? undefined : JSON.stringify({ repoId }),
+      });
 
-  //     alert("Fork event simulated! Check your email.");
-  //   } catch (error) {
-  //     console.error("Error simulating fork:", error);
-  //     setError("Failed to simulate fork event");
-  //   } finally {
-  //     setTestLoading(false);
-  //   }
-  // };
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error);
+        return;
+      }
+
+      fetchRepositories();
+    } catch (error) {
+      setError(`Failed to ${isTracked ? 'untrack' : 'track'} repository`);
+      console.error(`Error ${isTracked ? 'untracking' : 'tracking'} repository:`, error);
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
@@ -155,34 +160,12 @@ export default function Dashboard() {
       <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
       <ul className="list-disc pl-5">
         {repositories.map((repo) => (
-          <div key={repo._id} className="p-4 mb-4 bg-white rounded-lg shadow text-black flex justify-between items-center">
-            <p className="text-lg font-medium">{repo.repoUrl}</p>
-            <button
-              onClick={async () => {
-                if (window.confirm('Are you sure you want to stop tracking this repository?')) {
-                  try {
-                    const response = await fetch(`/api/repos/delete?repoId=${repo._id}`, {
-                      method: 'DELETE',
-                    });
-                    
-                    if (!response.ok) {
-                      const error = await response.json();
-                      throw new Error(error.error || 'Failed to delete repository');
-                    }
-                    
-                    // Remove the repository from the local state
-                    setRepositories(repositories.filter(r => r._id !== repo._id));
-                  } catch (error) {
-                    console.error('Error deleting repository:', error);
-                    alert('Failed to delete repository. Please try again.');
-                  }
-                }
-              }}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
+          <GitHubRepoCard
+            key={repo._id}
+            repo={repo}
+            onTrackToggle={handleTrackToggle}
+            isTracked={true}
+          />
         ))}
       </ul>
     </div>
