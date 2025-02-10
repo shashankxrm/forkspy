@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import {Header} from '../components/Header';
 import { GitHubRepoCard } from '../components/github-repo-card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 
 interface Repository {
   _id: string;
@@ -141,20 +144,26 @@ export default function Dashboard() {
         <Header />
       </div>
 
-      <form onSubmit={addRepository} className="flex gap-2 mb-6">
-        <input
-          type="text"
-          placeholder="Enter GitHub repository URL"
-          value={repoUrl}
-          onChange={(e) => setRepoUrl(e.target.value)}
-          className="border p-2 flex-1 rounded text-black dark:text-white "
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Add Repository
-        </button>
+      <form onSubmit={addRepository} className="flex gap-2 mb-6 ml-6">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="repoUrl">Repository URL</Label>
+          <div className="flex w-full max-w-sm items-center space-x-2">
+            <Input
+              id="repoUrl"
+              type="text"
+              placeholder="https://github.com/username/repo-name"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              className="border p-2 flex-1 rounded text-black dark:text-white"
+            />
+            <Button type="submit" className="dark:text-black px-4 py-2 rounded">
+              Add Repository
+            </Button>
+          </div>
+
+        </div>
+        
+        
       </form>
 
       <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
