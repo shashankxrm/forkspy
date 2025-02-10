@@ -84,9 +84,9 @@ export async function POST(req: NextRequest) {
           <p>Your repository <strong>${originalRepo}</strong> has been forked by <strong>${payload.sender.login}</strong>.</p>
           <p>Fork Details:</p>
           <ul>
-            <li>Fork URL: <a href="${payload.forkee.html_url}">${payload.forkee.full_name}</a></li>
-            <li>Forked by: <a href="${payload.sender.html_url}">${payload.sender.login}</a></li>
-            <li>Created at: ${new Date(payload.forkee.created_at).toLocaleString()}</li>
+        <li>Fork URL: <a href="${payload.forkee.html_url}">${payload.forkee.full_name}</a></li>
+        <li>Forked by: <a href="${payload.sender.html_url}">${payload.sender.login}</a></li>
+        <li>Created at: ${new Date(payload.forkee.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</li>
           </ul>
           <p>View the fork: <a href="${payload.forkee.html_url}">${payload.forkee.html_url}</a></p>
         `
