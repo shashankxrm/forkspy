@@ -58,7 +58,7 @@ export async function DELETE(req: NextRequest) {
           const getResponse = await fetch(deleteWebhookUrl, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+              'Authorization': `Bearer ${session.accessToken}`,
               'Accept': 'application/vnd.github.v3+json',
               'X-GitHub-Api-Version': '2022-11-28'
             }
@@ -85,7 +85,7 @@ export async function DELETE(req: NextRequest) {
           const deleteResponse = await fetch(deleteWebhookUrl, {
             method: 'DELETE',
             headers: {
-              'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+              'Authorization': `Bearer ${session.accessToken}`,
               'Accept': 'application/vnd.github.v3+json',
               'X-GitHub-Api-Version': '2022-11-28'
             }
