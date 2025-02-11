@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRequireAuth } from '../hooks/useRequireAuth';
-import {Header} from '../components/Header';
+import { Header } from '../components/Header';
 import { GitHubRepoCard } from '../components/github-repo-card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(5); // Number of repositories to display initially
 
   const fetchRepositories = async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
@@ -126,6 +127,10 @@ export default function Dashboard() {
     }
   };
 
+  const showMoreRepositories = () => {
+    setVisibleCount((prevCount) => prevCount + 10); // Load 10 more repositories
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
@@ -147,31 +152,30 @@ export default function Dashboard() {
       {/* Container div to maintain consistent left alignment */}
       <div className="max-w-[90%] mx-auto space-y-6">
         <form onSubmit={addRepository} className="flex justify-center w-full">
-        <div className="grid w-full max-w-2xl items-center gap-1.5">
-          <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
-          <div className="flex flex-col md:flex-row w-full md:space-x-2 space-y-1 md:space-y-0 md:items-center">
-            <Input
-              id="repoUrl"
-              type="text"
-              placeholder="https://github.com/username/repo-name"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
-            />
-            <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
-              Add Repository
-            </Button>
+          <div className="grid w-full max-w-2xl items-center gap-1.5">
+            <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
+            <div className="flex flex-col md:flex-row w-full md:space-x-2 space-y-1 md:space-y-0 md:items-center">
+              <Input
+                id="repoUrl"
+                type="text"
+                placeholder="https://github.com/username/repo-name"
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
+              />
+              <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
+                Add Repository
+              </Button>
+            </div>
           </div>
-
-        </div>
-      </form>
+        </form>
 
         <div>
           <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {repositories
-              .slice()
-              .reverse()
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .slice(0, visibleCount)
               .map((repo) => (
                 <GitHubRepoCard
                   key={repo._id}
@@ -181,8 +185,15 @@ export default function Dashboard() {
                 />
               ))}
           </div>
+          {visibleCount < repositories.length && (
+            <div className="flex justify-center mt-4">
+              <Button onClick={showMoreRepositories} className="px-4 py-2 rounded">
+                Show More
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
-);
+  );
 }
