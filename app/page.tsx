@@ -171,7 +171,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-10">
+    <div className="p-6 md:p-10">
       <div className="flex justify-between items-center mb-6">
         <Header />
       </div>
