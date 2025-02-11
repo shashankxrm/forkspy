@@ -96,7 +96,7 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
           <AvatarFallback>{repoDetails.owner.login[0].toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <h2 className="text-lg font-semibold">{repoDetails.full_name}</h2>
+          <h2 className="text-lg font-semibold">{repoDetails.name}</h2>
           <p className="text-sm text-muted-foreground">{repoDetails.owner.login}</p>
         </div>
       </CardHeader>
