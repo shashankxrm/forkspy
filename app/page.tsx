@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(5); // Number of repositories to display initially
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const size = useWindowSize();
 
   const fetchRepositories = async () => {
@@ -60,6 +61,10 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+  }, []);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user && session?.accessToken) {
@@ -145,16 +150,17 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        {document.documentElement.classList.contains('dark') ? (
-          <LoadingScannerDark size="lg" />
-        ) : (
-          <LoadingCircuitLight size="lg" />
-        )}
-      </div>
-    );
-  }
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      {isDarkMode ? (
+        <LoadingScannerDark size="lg" />
+      ) : (
+        <LoadingCircuitLight size="lg" />
+      )}
+    </div>
+  );
+}
+
 
   if (error) {
     return (
