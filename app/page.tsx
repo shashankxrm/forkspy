@@ -149,19 +149,20 @@ export default function Dashboard() {
         <form onSubmit={addRepository} className="flex justify-center w-full">
         <div className="grid w-full max-w-2xl items-center gap-1.5">
           <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
-          <div className="flex w-full items-center space-x-2">
+          <div className="flex flex-col md:flex-row w-full md:space-x-2 space-y-1 md:space-y-0 md:items-center">
             <Input
               id="repoUrl"
               type="text"
               placeholder="https://github.com/username/repo-name"
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
-              className="border p-2 flex-1 rounded text-black dark:text-white"
+              className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
             />
-            <Button type="submit" className="dark:text-black px-4 py-2 rounded whitespace-nowrap">
+            <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
               Add Repository
             </Button>
           </div>
+
         </div>
       </form>
 
