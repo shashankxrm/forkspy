@@ -7,6 +7,7 @@ import { GitHubRepoCard } from '../components/github-repo-card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 interface Repository {
   _id: string;
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(5); // Number of repositories to display initially
+  const size = useWindowSize();
 
   const fetchRepositories = async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
@@ -62,6 +64,12 @@ export default function Dashboard() {
       setError("Please sign in to view repositories");
     }
   }, [status, session]);
+
+  useEffect(() => {
+    if (size.width && size.width >= 640) {
+      setVisibleCount(repositories.length); // Show all repositories on non-mobile devices
+    }
+  }, [size.width, repositories.length]);
 
   const addRepository = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,7 +194,7 @@ export default function Dashboard() {
               ))}
           </div>
           {visibleCount < repositories.length && (
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 sm:hidden">
               <Button onClick={showMoreRepositories} className="px-4 py-2 rounded">
                 Show More
               </Button>
