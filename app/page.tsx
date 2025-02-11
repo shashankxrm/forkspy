@@ -8,6 +8,10 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useWindowSize } from '../hooks/useWindowSize';
+//import { LoadingSpinner } from '../components/loading-spinner-light';
+import { LoadingScannerDark} from "../components/loading-scanner-dark";
+import { LoadingCircuitLight } from "../components/loading-scanner-light";
+
 
 interface Repository {
   _id: string;
@@ -141,7 +145,15 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        {document.documentElement.classList.contains('dark') ? (
+          <LoadingScannerDark size="lg" />
+        ) : (
+          <LoadingCircuitLight size="lg" />
+        )}
+      </div>
+    );
   }
 
   if (error) {

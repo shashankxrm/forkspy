@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { getProviders, signIn, ClientSafeProvider } from "next-auth/react";
 import { SignInCard } from '../../../components/SignInCard';
+import { LoadingCircuitLight } from '../../../components/loading-scanner-light';
+import { LoadingScannerDark } from '../../../components/loading-scanner-dark';
 
 export default function SignIn() {
   const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
@@ -17,7 +19,15 @@ export default function SignIn() {
   }, []);
 
   if (!providers) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        {document.documentElement.classList.contains('dark') ? (
+          <LoadingScannerDark size="lg" />
+        ) : (
+          <LoadingCircuitLight size="lg" />
+        )}
+      </div>
+    );;
   }
 
   return (
