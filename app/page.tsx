@@ -7,6 +7,8 @@ import { GitHubRepoCard } from '../components/github-repo-card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react";
 import { useWindowSize } from '../hooks/useWindowSize';
 //import { LoadingSpinner } from '../components/loading-spinner-light';
 import { LoadingScannerDark} from "../components/loading-scanner-dark";
@@ -162,19 +164,21 @@ export default function Dashboard() {
 }
 
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 md:p-10">
       <div className="flex justify-between items-center mb-6">
         <Header />
       </div>
+      {/* Show error alert at the top if there's an error */}
+      {error && (
+        <div className="max-w-[90%] mx-auto mb-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* Container div to maintain consistent left alignment */}
       <div className="max-w-[90%] mx-auto space-y-6">
