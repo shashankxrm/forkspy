@@ -12,6 +12,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 interface Repository {
   _id: string;
   repoUrl: string;
+  createdAt: string;
 }
 
 export default function Dashboard() {
