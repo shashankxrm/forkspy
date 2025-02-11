@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 import Provider from "@/components/Provider";
-import UnderConstruction from '../components/under-construction';
+
 import { ThemeProvider } from "next-themes";
 import { ModeToggle } from '../components/ModeToggle';
 
@@ -27,7 +27,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
             >
-            <UnderConstruction />
+            {/* <UnderConstruction /> */}
             <div style={{ position: 'fixed', bottom: '10px', right: '10px', zIndex: 1000 }}>
               <ModeToggle />
             </div>
