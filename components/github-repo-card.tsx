@@ -101,7 +101,7 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm">{repoDetails.description}</p>
+        <p className="text-sm line-clamp-3">{repoDetails.description}</p>
         <div className="flex justify-between text-sm">
           <span className="flex items-center gap-1">
             <Star className="h-4 w-4" />
