@@ -139,15 +139,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-10">
       <div className="flex justify-between items-center mb-6">
         <Header />
       </div>
 
-      <form onSubmit={addRepository} className="flex gap-2 mb-6 ml-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="repoUrl">Repository URL</Label>
-          <div className="flex w-full max-w-sm items-center space-x-2">
+      {/* Container div to maintain consistent left alignment */}
+      <div className="max-w-[90%] mx-auto space-y-6">
+        <form onSubmit={addRepository} className="flex justify-center w-full">
+        <div className="grid w-full max-w-2xl items-center gap-1.5">
+          <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
+          <div className="flex w-full items-center space-x-2">
             <Input
               id="repoUrl"
               type="text"
@@ -156,30 +158,30 @@ export default function Dashboard() {
               onChange={(e) => setRepoUrl(e.target.value)}
               className="border p-2 flex-1 rounded text-black dark:text-white"
             />
-            <Button type="submit" className="dark:text-black px-4 py-2 rounded">
+            <Button type="submit" className="dark:text-black px-4 py-2 rounded whitespace-nowrap">
               Add Repository
             </Button>
           </div>
-
         </div>
-        
-        
       </form>
 
-      <h2 className="text-xl font-bold mb-2">Tracked Repositories</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {repositories
-          .slice()
-          .reverse()
-          .map((repo) => (
-            <GitHubRepoCard
-              key={repo._id}
-              repo={repo}
-              onTrackToggle={handleTrackToggle}
-              isTracked={true}
-            />
-          ))}
+        <div>
+          <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {repositories
+              .slice()
+              .reverse()
+              .map((repo) => (
+                <GitHubRepoCard
+                  key={repo._id}
+                  repo={repo}
+                  onTrackToggle={handleTrackToggle}
+                  isTracked={true}
+                />
+              ))}
+          </div>
+        </div>
       </div>
     </div>
-  );
+);
 }
