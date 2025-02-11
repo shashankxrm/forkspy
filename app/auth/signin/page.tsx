@@ -8,8 +8,12 @@ import { LoadingScannerDark } from '../../../components/loading-scanner-dark';
 
 export default function SignIn() {
   const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
+    // Check theme on mount and set state
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+
     const fetchProviders = async () => {
       const res = await getProviders();
       setProviders(res);
@@ -21,13 +25,13 @@ export default function SignIn() {
   if (!providers) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        {document.documentElement.classList.contains('dark') ? (
+        {isDarkMode ? (
           <LoadingScannerDark size="lg" />
         ) : (
           <LoadingCircuitLight size="lg" />
         )}
       </div>
-    );;
+    );
   }
 
   return (
