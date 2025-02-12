@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
             statusText: webhookResponse.statusText,
             error: error,
             repoFullName: repoFullName,
-            webhookUrl: `${webhookUrl}/api/webhook`,
+            webhookUrl: `${webhookUrl}/api/webhook/`,
             requestBody: {
               name: 'web',
               active: true,
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
       userEmail: session.user.email,
       webhookId: webhookId, // will be undefined in non-production
       createdAt: new Date(),
-      webhookUrl: `${webhookUrl}/api/webhook`
+      webhookUrl: `${webhookUrl}/api/webhook/`
     });
 
     return NextResponse.json({ 

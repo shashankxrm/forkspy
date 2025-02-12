@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     };
 
     // Forward the simulated payload to our webhook endpoint
-    const webhookResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/webhook`, {
+    const webhookResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
