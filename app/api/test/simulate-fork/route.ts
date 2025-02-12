@@ -28,11 +28,10 @@ export async function POST(req: NextRequest) {
     if (!webhookUrl.startsWith('http')) {
       webhookUrl = `https://${webhookUrl}`;
     }
-    if (!webhookUrl.endsWith('/')) {
-      webhookUrl = `${webhookUrl}/`;
-    }
+    // Remove trailing slash if present
+    webhookUrl = webhookUrl.replace(/\/$/, '');
 
-    const webhookResponse = await fetch(`${webhookUrl}api/webhook/`, {
+    const webhookResponse = await fetch(`${webhookUrl}/api/webhook`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

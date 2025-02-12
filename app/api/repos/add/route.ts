@@ -95,14 +95,13 @@ export async function POST(req: NextRequest) {
     console.log('Setting up webhook for:', repoFullName);
     console.log('Using access token:', session.accessToken ? 'Token present' : 'No token');
     
-    // Normalize the webhook URL to ensure HTTPS and trailing slash
+    // Normalize the webhook URL to ensure HTTPS
     let webhookUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     if (!webhookUrl.startsWith('http')) {
       webhookUrl = `https://${webhookUrl}`;
     }
-    if (!webhookUrl.endsWith('/')) {
-      webhookUrl = `${webhookUrl}/`;
-    }
+    // Remove trailing slash if present
+    webhookUrl = webhookUrl.replace(/\/$/, '');
     console.log('Webhook URL:', webhookUrl);
 
     // Skip webhook creation in development mode
@@ -125,7 +124,7 @@ export async function POST(req: NextRequest) {
             active: true,
             events: ['fork'],
             config: {
-              url: `${webhookUrl}/api/webhook/`,
+              url: `${webhookUrl}/api/webhook`,
               content_type: 'application/json',
               secret: process.env.NEXTAUTH_SECRET || '',
               insecure_ssl: '0'
@@ -155,7 +154,7 @@ export async function POST(req: NextRequest) {
               active: true,
               events: ['fork'],
               config: {
-                url: `${webhookUrl}/api/webhook/`,
+                url: `${webhookUrl}/api/webhook`,
                 content_type: 'application/json',
                 secret: process.env.NEXTAUTH_SECRET ? 'present' : 'missing',
                 insecure_ssl: '0'

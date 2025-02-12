@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  trailingSlash: true,
-  async redirects() {
+  trailingSlash: false,
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
     return [
       {
         source: '/api/webhook',
-        destination: '/api/webhook/',
-        permanent: true,
+        destination: '/api/webhook',
       },
     ]
   },
