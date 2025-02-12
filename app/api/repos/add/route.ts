@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
             active: true,
             events: ['fork'],
             config: {
-              url: `${webhookUrl}/api/webhook`,
+              url: `${webhookUrl}/api/webhook/`,
               content_type: 'application/json',
               secret: process.env.NEXTAUTH_SECRET || '',
               insecure_ssl: '0'
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
               active: true,
               events: ['fork'],
               config: {
-                url: `${webhookUrl}/api/webhook`,
+                url: `${webhookUrl}/api/webhook/`,
                 content_type: 'application/json',
                 secret: process.env.NEXTAUTH_SECRET ? 'present' : 'missing',
                 insecure_ssl: '0'

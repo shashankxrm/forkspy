@@ -8,6 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import { Star, GitFork, Eye, Calendar } from "lucide-react"
 import type { GitHubRepo } from "../types/github-repo"
 import { useSession } from "next-auth/react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface RepoCardProps {
   repo: {
@@ -72,7 +83,37 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
             <div className="h-4 bg-gray-200 rounded w-5/6"></div>
           </div>
         </div>
-      </Card>
+        <CardFooter>
+  {isTracked ? (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" className="w-full">
+          Untrack Repository
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will untrack the repository and remove all associated webhooks. 
+            This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleTrackToggle}>
+            Yes, untrack repository
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ) : (
+    <Button onClick={handleTrackToggle} variant="default" className="w-full">
+      Track Repository
+    </Button>
+  )}
+</CardFooter>
+        </Card>
     )
   }
 
@@ -125,9 +166,34 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleTrackToggle} variant={isTracked ? "destructive" : "default"} className="w-full">
-          {isTracked ? "Untrack" : "Track"} Repository
-        </Button>
+        {isTracked ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full">
+                Untrack Repository
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will untrack the repository and remove all associated webhooks. 
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleTrackToggle}>
+                  Yes, untrack repository
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button onClick={handleTrackToggle} variant="default" className="w-full">
+            Track Repository
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )
