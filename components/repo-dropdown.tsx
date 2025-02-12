@@ -40,6 +40,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   const [error, setError] = useState<string | null>(null)
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
   const [showDialog, setShowDialog] = useState(false)
+  const [selectedValue, setSelectedValue] = useState<string>('')
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -68,6 +69,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
     const repo = repos.find(r => r.fullName === value)
     if (repo) {
       setSelectedRepo(repo)
+      setSelectedValue(value)
       setShowDialog(true)
     }
   }
@@ -77,6 +79,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
       onSelect(selectedRepo)
       setShowDialog(false)
       setSelectedRepo(null)
+      setSelectedValue('')
     }
   }
 
@@ -90,7 +93,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
 
   return (
     <>
-    <Select onValueChange={handleValueChange}>
+    <Select value={selectedValue} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
         <SelectValue placeholder="Select a repository" />
       </SelectTrigger>
