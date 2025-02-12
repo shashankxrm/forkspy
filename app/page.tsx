@@ -92,8 +92,7 @@ export default function Dashboard() {
     if (status === 'authenticated' && session?.user && session?.accessToken) {
       fetchRepositories();
     } else if (status === 'unauthenticated') {
-      setLoading(false);
-      setError("Please sign in to view repositories");
+      setLoading(true);
     }
   }, [status, session]);
 
@@ -176,7 +175,7 @@ export default function Dashboard() {
     setVisibleCount((prevCount) => prevCount + 10); // Load 10 more repositories
   };
 
-  if (loading) {
+  if (loading || status === 'loading') {
     return (
       <div className="flex justify-center items-center min-h-screen">
         {isDarkMode ? (
