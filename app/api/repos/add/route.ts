@@ -95,7 +95,14 @@ export async function POST(req: NextRequest) {
     console.log('Setting up webhook for:', repoFullName);
     console.log('Using access token:', session.accessToken ? 'Token present' : 'No token');
     
-    const webhookUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Normalize the webhook URL to ensure HTTPS and trailing slash
+    let webhookUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    if (!webhookUrl.startsWith('http')) {
+      webhookUrl = `https://${webhookUrl}`;
+    }
+    if (!webhookUrl.endsWith('/')) {
+      webhookUrl = `${webhookUrl}/`;
+    }
     console.log('Webhook URL:', webhookUrl);
 
     // Skip webhook creation in development mode

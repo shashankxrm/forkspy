@@ -23,7 +23,16 @@ export async function POST(req: NextRequest) {
     };
 
     // Forward the simulated payload to our webhook endpoint
-    const webhookResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/`, {
+    // Normalize the webhook URL
+    let webhookUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    if (!webhookUrl.startsWith('http')) {
+      webhookUrl = `https://${webhookUrl}`;
+    }
+    if (!webhookUrl.endsWith('/')) {
+      webhookUrl = `${webhookUrl}/`;
+    }
+
+    const webhookResponse = await fetch(`${webhookUrl}api/webhook/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
