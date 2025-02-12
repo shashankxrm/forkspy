@@ -68,18 +68,19 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
 
   return (
     <Select onValueChange={handleValueChange}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
         <SelectValue placeholder="Select a repository" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="w-[280px] md:w-[400px] lg:w-[700px]">
+      
         <SelectGroup>
           <SelectLabel>Your Repositories</SelectLabel>
           {repos.map((repo) => (
             <SelectItem key={repo.id} value={repo.fullName}>
               <div className="flex flex-col gap-1">
-                <div>{repo.fullName}</div>
+                <div className="truncate">{repo.fullName}</div>
                 {repo.description && (
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground truncate">
                     {repo.description}
                   </div>
                 )}
