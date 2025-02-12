@@ -8,6 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useEffect, useState } from "react"
 
 interface Repository {
@@ -28,6 +38,8 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   const [repos, setRepos] = useState<Repository[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
+  const [showDialog, setShowDialog] = useState(false)
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -52,9 +64,19 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   }, [])
 
   const handleValueChange = (value: string) => {
-    const selectedRepo = repos.find(repo => repo.fullName === value)
+    // Find the repository from our repos array instead of parsing JSON
+    const repo = repos.find(r => r.fullName === value)
+    if (repo) {
+      setSelectedRepo(repo)
+      setShowDialog(true)
+    }
+  }
+
+  const handleConfirm = () => {
     if (selectedRepo) {
       onSelect(selectedRepo)
+      setShowDialog(false)
+      setSelectedRepo(null)
     }
   }
 
@@ -67,6 +89,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   }
 
   return (
+    <>
     <Select onValueChange={handleValueChange}>
       <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
         <SelectValue placeholder="Select a repository" />
@@ -90,5 +113,24 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
         </SelectGroup>
       </SelectContent>
     </Select>
+    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Track Repository</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to track {selectedRepo?.fullName}? This will set up webhooks and track all forks.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedRepo(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm}>
+              Yes, track repository
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      </>
   )
 }
