@@ -34,6 +34,49 @@ export async function POST(req: NextRequest) {
     const repoFullName = `${owner}/${repo}`;
     console.log('Repository full name:', repoFullName);
 
+    // Get the authenticated user's GitHub username
+    const userResponse = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${session.accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!userResponse.ok) {
+      console.error('Failed to get user data:', await userResponse.text());
+      return NextResponse.json({ error: "Failed to verify user identity" }, { status: 401 });
+    }
+
+    const userData = await userResponse.json();
+    const githubUsername = userData.login;
+
+    // Check if the user is the owner of the repository
+    if (owner.toLowerCase() !== githubUsername.toLowerCase()) {
+      return NextResponse.json({ 
+        error: "You can only add repositories that you own" 
+      }, { status: 403 });
+    }
+
+    // Verify if the repository exists
+    const repoResponse = await fetch(`https://api.github.com/repos/${repoFullName}`, {
+      headers: {
+        'Authorization': `Bearer ${session.accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!repoResponse.ok) {
+      if (repoResponse.status === 404) {
+        return NextResponse.json({ 
+          error: "Repository does not exist. Please check the URL and try again." 
+        }, { status: 404 });
+      }
+      console.error('Failed to verify repository:', await repoResponse.text());
+      return NextResponse.json({ 
+        error: "Failed to verify repository. Please try again later." 
+      }, { status: 500 });
+    }
+
     // Connect to MongoDB
     await client.connect();
     const db = client.db(dbName);
