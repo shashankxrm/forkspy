@@ -13,6 +13,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 //import { LoadingSpinner } from '../components/loading-spinner-light';
 import { LoadingScannerDark} from "../components/loading-scanner-dark";
 import { LoadingCircuitLight } from "../components/loading-scanner-light";
+import { RepoDropdown } from "../components/repo-dropdown";
 
 
 interface Repository {
@@ -200,6 +201,48 @@ export default function Dashboard() {
             </div>
           </div>
         </form>
+
+        {/* OR divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">OR</span>
+          </div>
+        </div>
+
+        {/* Repository Dropdown */}
+        <div className="flex justify-center w-full">
+          <div className="grid w-full max-w-2xl items-center gap-1.5">
+            <Label>Select from your repositories</Label>
+            <RepoDropdown 
+              onSelect={(repo) => {
+                const repoUrl = repo.url;
+                // Use the existing addRepository logic
+                fetch("/api/repos/add", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `token ${session?.accessToken}`,
+                  },
+                  body: JSON.stringify({ repoUrl }),
+                }).then(response => {
+                  if (!response.ok) {
+                    return response.json().then(data => {
+                      throw new Error(data.error);
+                    });
+                  }
+                  return response.json();
+                }).then(() => {
+                  fetchRepositories();
+                }).catch(error => {
+                  setError(error.message || "Failed to add repository");
+                });
+              }} 
+            />
+          </div>
+        </div>
 
         <div>
           <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
