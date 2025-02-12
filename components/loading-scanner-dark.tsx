@@ -51,7 +51,7 @@ export function LoadingScannerDark({ size = "md", className }: LoadingScannerDar
         }}
       >
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/forkspy-dark-ViEZTGQPOqJ7kFBZIZ2JH60w1iC0uW.png"
+          src="/forkspy-dark.png"
           alt="Loading"
           className="w-full h-full"
           width={dimensions[size].width}

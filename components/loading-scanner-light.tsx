@@ -59,7 +59,7 @@ export function LoadingCircuitLight({ size = "md", className }: LoadingCircuitLi
         }}
       >
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/forkspy-light-sKEDeZLQEnmozK17sO1A1wbZbrY1Vt.png"
+          src="/forkspy-light.png"
           alt="Loading"
           className="w-full h-full"
           width={dimensions[size].width}
