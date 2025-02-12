@@ -22,7 +22,22 @@ export async function POST(req: NextRequest) {
       console.log('Method:', req.method);
       console.log('Headers:', Object.fromEntries(req.headers.entries()));
       
-      const payload = await req.json();
+      let payload;
+      const contentType = req.headers.get('content-type');
+      
+      if (contentType?.includes('application/json')) {
+        payload = await req.json();
+      } else if (contentType?.includes('application/x-www-form-urlencoded')) {
+        const formData = await req.formData();
+        const payloadStr = formData.get('payload');
+        if (typeof payloadStr === 'string') {
+          payload = JSON.parse(payloadStr);
+        } else {
+          throw new Error('Invalid payload format');
+        }
+      } else {
+        throw new Error(`Unsupported content type: ${contentType}`);
+      }
       console.log('Webhook Event Type:', payload.event || payload.action);
       console.log('Full Payload:', JSON.stringify(payload, null, 2));
       
