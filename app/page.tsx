@@ -37,7 +37,7 @@ export default function Dashboard() {
     
     try {
       setError(null);
-      const response = await fetch("/api/repos/get", {
+      const response = await fetch("/api/repos/get/", {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
     try {
       setError(null);
-      const response = await fetch("/api/repos/add", {
+      const response = await fetch("/api/repos/add/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,8 +125,8 @@ export default function Dashboard() {
     try {
       setError(null);
       const response = await fetch(isTracked 
-        ? `/api/repos/delete?repoId=${repoId}` 
-        : '/api/repos/add', {
+        ? `/api/repos/delete/?repoId=${repoId}` 
+        : '/api/repos/add/', {
         method: isTracked ? 'DELETE' : 'POST',
         headers: {
           "Content-Type": "application/json",
