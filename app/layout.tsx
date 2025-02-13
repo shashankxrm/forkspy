@@ -24,7 +24,8 @@ export const metadata: Metadata = {
     "Developer tools",
     "GitHub webhooks",
     "Fork notifications",
-    "Repository management"
+    "Repository management",
+    "gihub fork tracker"
   ],
   authors: [{ name: "Shashank", url: "https://github.com/shashankxrm" }],
   creator: "Shashank",
