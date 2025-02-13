@@ -12,7 +12,7 @@ export function Header() {
           <Link href="/" className="mr-6 flex items-center space-x-2">
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground text-xl">
+            <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground text-xl">
               Dashboard
             </Link>
           </nav>
