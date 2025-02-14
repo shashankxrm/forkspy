@@ -19,6 +19,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useEffect, useState } from "react"
+import { Search } from 'lucide-react';
+import { Input } from "@/components/ui/input"
 
 interface Repository {
   id: number
@@ -41,6 +43,11 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null)
   const [showDialog, setShowDialog] = useState(false)
   const [selectedValue, setSelectedValue] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('')
+
+  const filteredRepos = repos.filter((repo) =>
+    repo.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -94,31 +101,48 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   return (
     <>
     <Select value={selectedValue} onValueChange={handleValueChange}>
-      <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
-        <SelectValue placeholder="Select a repository" className="truncate" />
-      </SelectTrigger>
-      <SelectContent className="w-[280px] md:w-[400px] lg:w-[700px]">
-        <SelectGroup>
-          <SelectLabel>Your Repositories</SelectLabel>
-          {repos.map((repo) => (
-            <SelectItem 
-              key={repo.id} 
-              value={repo.fullName} 
-              className="overflow-x-auto custom-scrollbar hover:cursor-pointer"
-            >
-              <div className="flex flex-col gap-1 min-w-full">
-                <div className="whitespace-nowrap">{repo.fullName}</div>
-                {repo.description && (
-                  <div className="text-xs text-muted-foreground whitespace-nowrap">
-                    {repo.description}
-                  </div>
-                )}
+        <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
+          <SelectValue placeholder="Select a repository" className="truncate" />
+        </SelectTrigger>
+        <SelectContent className="w-[280px] md:w-[400px] lg:w-[700px]">
+          <div className="px-3 pb-2">
+            <div className="search-container">
+              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Input
+                placeholder="Search repositories..."
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+          <SelectGroup>
+            <SelectLabel>Your Repositories</SelectLabel>
+            {filteredRepos.length === 0 ? (
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                No repositories found
               </div>
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+            ) : (
+              filteredRepos.map((repo) => (
+                <SelectItem 
+                  key={repo.id} 
+                  value={repo.fullName} 
+                  className="overflow-x-auto custom-scrollbar hover:cursor-pointer"
+                >
+                  <div className="flex flex-col gap-1 min-w-full">
+                    <div className="whitespace-nowrap">{repo.fullName}</div>
+                    {repo.description && (
+                      <div className="text-xs text-muted-foreground whitespace-nowrap">
+                        {repo.description}
+                      </div>
+                    )}
+                  </div>
+                </SelectItem>
+              ))
+            )}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

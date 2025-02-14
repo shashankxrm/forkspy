@@ -146,3 +146,21 @@ select:focus {
     background-color: rgba(75, 85, 99, 0.5);
   }
 }
+
+@layer components {
+
+  /* Add styles for the search input */
+  .search-input {
+    @apply w-full bg-transparent border-0 focus:ring-0 focus:border-0 p-0;
+  }
+
+  /* Style for the search container */
+  .search-container {
+    @apply flex items-center gap-2 px-3 py-2 w-full bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground transition-colors;
+  }
+
+  /* Dark mode specific styles */
+  .dark .search-container {
+    @apply bg-zinc-900 border-zinc-800;
+  }
+}
