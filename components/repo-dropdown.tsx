@@ -104,15 +104,15 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
         <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
           <SelectValue placeholder="Select a repository" className="truncate" />
         </SelectTrigger>
-        <SelectContent 
-        className="w-[280px] md:w-[400px] lg:w-[700px]"
-        onPointerDownOutside={(e) => {
-          // Prevent closing when interacting with search on mobile
-          if (e.target instanceof HTMLInputElement || e.target.closest('.search-container')) {
-      e.preventDefault();
-    }
-        }}
-    >
+        <SelectContent
+          className="w-[280px] md:w-[400px] lg:w-[700px]"
+          onPointerDownOutside={(e) => {
+            const target = e.target as HTMLElement | null;
+            if (target && (target instanceof HTMLInputElement || target.closest('.search-container'))) {
+              e.preventDefault();
+            }
+          }}
+        >
           <div className="px-3 pb-2">
             <div 
               className="search-container"
