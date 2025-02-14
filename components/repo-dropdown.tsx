@@ -108,7 +108,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
-          <Command shouldFilter={false} className="rounded-lg border shadow-md">
+          <Command className="rounded-lg border shadow-md">
             <CommandInput
               placeholder="Search repositories..."
               value={searchQuery}
