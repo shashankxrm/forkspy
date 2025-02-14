@@ -108,30 +108,43 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
         <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
           <div className="rounded-lg border shadow-md">
             <Command>
-              <CommandInput
-                placeholder="Search repositories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-none focus:ring-0 h-11"
-              />
-              <CommandList className="max-h-[300px] overflow-auto">
-                <CommandEmpty className="py-6 text-sm text-center text-muted-foreground">
-                  No repositories found.
-                </CommandEmpty>
-                {filteredRepos.map((repo) => (
-                  <CommandItem key={repo.id} onSelect={() => handleValueChange(repo.fullName)} className="px-4 py-2 cursor-pointer hover:bg-accent group">
-                    <div className="flex items-start gap-3 min-w-full">
-                      <GitForkIcon className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
-                      <div className="flex-1">
-                        <span className="font-medium">{repo.fullName}</span>
-                        {selectedValue.toLowerCase() === repo.fullName.toLowerCase() && <CheckIcon className="h-4 w-4 text-primary shrink-0" />}
-                        {repo.description && <div className="text-xs text-muted-foreground">{repo.description}</div>}
-                      </div>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
+  <CommandInput
+    placeholder="Search repositories..."
+    value={searchQuery}
+    onValueChange={setSearchQuery}
+    className="border-none focus:ring-0 h-11"
+  />
+  <CommandList className="max-h-[300px] overflow-auto">
+    <CommandEmpty className="py-6 text-sm text-center text-muted-foreground">
+      No repositories found.
+    </CommandEmpty>
+    {filteredRepos.map((repo) => (
+      <CommandItem
+        key={repo.id}
+        onSelect={() => handleValueChange(repo.fullName)}
+        className="px-4 py-2 cursor-pointer hover:bg-accent group"
+      >
+        <div className="flex items-start gap-3 min-w-full">
+          <GitForkIcon className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
+          <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none hover:scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent-foreground/10 hover:scrollbar-thumb-accent-foreground/20">
+            <div className="flex items-center gap-2 w-fit min-w-full">
+              <span className="font-medium whitespace-nowrap">{repo.fullName}</span>
+              {selectedValue === repo.fullName && (
+                <CheckIcon className="h-4 w-4 text-primary shrink-0" />
+              )}
+            </div>
+            {repo.description && (
+              <div className="text-xs text-muted-foreground whitespace-nowrap">
+                {repo.description}
+              </div>
+            )}
+          </div>
+        </div>
+      </CommandItem>
+    ))}
+  </CommandList>
+</Command>
+
           </div>
         </PopoverContent>
       </Popover>
