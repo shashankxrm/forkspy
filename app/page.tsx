@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { GitFork, Mail, Shield, Github, Twitter, GitBranch, Bell, Users, Zap } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -11,12 +11,23 @@ import { useTheme } from "next-themes" // Add this import
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false)
   const { theme } = useTheme() // Use next-themes hook
+  const [lastScrollY, setLastScrollY] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
   const { scrollYProgress } = useScroll()
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+
+    const updateScrollDirection = () => {
+      const currentScrollY = window.scrollY
+      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 100)
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener('scroll', updateScrollDirection)
+    return () => window.removeEventListener('scroll', updateScrollDirection)
+  }, [lastScrollY])
 
   if (!mounted) return null
 
@@ -40,7 +51,15 @@ export default function LandingPage() {
       {/* Content */}
       <div className="relative z-20">
         {/* Header */}
-        <header className="fixed w-full backdrop-blur-lg bg-background/75 z-50">
+        <AnimatePresence>
+          {isVisible && (
+            <motion.header
+              initial={{ y: -100 }}
+              animate={{ y: 0 }}
+              exit={{ y: -100 }}
+              transition={{ duration: 0.3 }}
+              className="fixed w-full backdrop-blur-lg bg-background/75 dark:bg-zinc-900/75 border-b border-gray-200 dark:border-gray-800 z-50"
+            >
           <div className="container mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Image
@@ -61,7 +80,9 @@ export default function LandingPage() {
               <Link href="/auth/signin">Sign In with GitHub</Link>
             </Button>
           </div>
-        </header>
+          </motion.header>
+          )}
+        </AnimatePresence>
 
         {/* Hero Section */}
         <section className="pt-32 pb-20 px-4">
@@ -217,7 +238,7 @@ export default function LandingPage() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <motion.div whileHover={{ y: -5 }} className="p-6 rounded-xl bg-card shadow-lg">
+    <motion.div whileHover={{ y: -5 }} className="p-6 rounded-xl bg-card shadow-card">
       <div className="mb-4">{icon}</div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
@@ -250,7 +271,7 @@ function StepCard({
 
 function UseCaseCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <motion.div whileHover={{ scale: 1.05 }} className="p-6 rounded-xl bg-card shadow-lg text-center">
+    <motion.div whileHover={{ scale: 1.05 }} className="p-6 rounded-xl bg-card shadow-card text-center">
       <div className="mb-4 flex justify-center">{icon}</div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
