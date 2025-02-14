@@ -95,18 +95,21 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
     <>
     <Select value={selectedValue} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
-        <SelectValue placeholder="Select a repository" />
+        <SelectValue placeholder="Select a repository" className="truncate" />
       </SelectTrigger>
       <SelectContent className="w-[280px] md:w-[400px] lg:w-[700px]">
-      
         <SelectGroup>
           <SelectLabel>Your Repositories</SelectLabel>
           {repos.map((repo) => (
-            <SelectItem key={repo.id} value={repo.fullName}>
-              <div className="flex flex-col gap-1">
-                <div className="truncate">{repo.fullName}</div>
+            <SelectItem 
+              key={repo.id} 
+              value={repo.fullName} 
+              className="overflow-x-auto custom-scrollbar hover:cursor-pointer"
+            >
+              <div className="flex flex-col gap-1 min-w-full">
+                <div className="whitespace-nowrap">{repo.fullName}</div>
                 {repo.description && (
-                  <div className="text-xs text-muted-foreground truncate">
+                  <div className="text-xs text-muted-foreground whitespace-nowrap">
                     {repo.description}
                   </div>
                 )}
