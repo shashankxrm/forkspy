@@ -132,7 +132,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
                           )}
                         </div>
                         {repo.description && (
-                          <div className="text-xs text-muted-foreground whitespace-nowrap">
+                          <div className="text-xs text-muted-foreground whitespace-normal">
                             {repo.description}
                           </div>
                         )}
