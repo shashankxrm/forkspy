@@ -39,7 +39,7 @@ export default function SignIn() {
       <h1 className="text-2xl mb-4">Sign in to your account</h1>
       {Object.values(providers).map((provider) => (
         <div key={provider.name}>
-          <SignInCard onSignIn={() => signIn(provider.id, { callbackUrl: '/', prompt: 'login' })} />
+          <SignInCard onSignIn={() => signIn(provider.id, { callbackUrl: '/dashboard', prompt: 'login' })} />
         </div>
       ))}
     </div>

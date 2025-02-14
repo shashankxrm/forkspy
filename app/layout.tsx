@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     description: "Track and monitor GitHub repository forks in real-time",
     images: [
       {
-        url: "forkspy.jpeg", // Add your OG image
+        url: "https://forkspy.vercel.app/forkspy.jpeg", // Add your OG image
         width: 1200,
         height: 630,
         alt: "ForkSpy Preview",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ForkSpy - GitHub Fork Tracking Made Easy",
     description: "Track and monitor GitHub repository forks in real-time",
-    images: ["forkspy.jpeg"],
+    images: ["https://forkspy.vercel.app/forkspy.jpeg"],
     creator: "@shashankxrm",
   },
   robots: {

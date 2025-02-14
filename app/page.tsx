@@ -1,306 +1,296 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useRequireAuth } from '../hooks/useRequireAuth';
-import { Header } from '../components/Header';
-import { GitHubRepoCard } from '../components/github-repo-card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react";
-import { useWindowSize } from '../hooks/useWindowSize';
-//import { LoadingSpinner } from '../components/loading-spinner-light';
-import { LoadingScannerDark} from "../components/loading-scanner-dark";
-import { LoadingCircuitLight } from "../components/loading-scanner-light";
-import { RepoDropdown } from "../components/repo-dropdown";
+import { useState, useEffect } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { GitFork, Mail, Shield, Github, Twitter, GitBranch, Bell, Users, Zap } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes" // Add this import
 
-
-interface Repository {
-  _id: string;
-  repoUrl: string;
-  createdAt: string;
-}
-
-const LoadingOverlay = ({ isDarkMode }: { isDarkMode: boolean }) => {
-  return (
-    <div className="fixed inset-0 z-[100]">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative flex items-center justify-center h-full">
-        <div className="bg-background p-8 rounded-lg shadow-xl flex flex-col items-center gap-4">
-          {isDarkMode ? (
-            <LoadingScannerDark size="lg" />
-          ) : (
-            <LoadingCircuitLight size="lg" />
-          )}
-          <p className="text-foreground">Processing your request...</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function Dashboard() {
-  const { data: session, status } = useRequireAuth();
-  const [repoUrl, setRepoUrl] = useState("");
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(5); // Number of repositories to display initially
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const size = useWindowSize();
-
-  const fetchRepositories = async () => {
-    if (status !== 'authenticated' || !session?.accessToken) return;
-    
-    try {
-      setError(null);
-      const response = await fetch("/api/repos/get/", {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `token ${session.accessToken}`,
-        },
-        cache: 'no-store',
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error);
-        if (response.status === 401) {
-          console.log("Session status:", status);
-          console.log("Session data:", session);
-        }
-        return;
-      }
-      const data = await response.json();
-      setRepositories(data);
-    } catch (error) {
-      setError("Failed to fetch repositories");
-      console.error("Error fetching repositories:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function LandingPage() {
+  const [mounted, setMounted] = useState(false)
+  const { theme } = useTheme() // Use next-themes hook
+  const { scrollYProgress } = useScroll()
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
 
   useEffect(() => {
-    setIsDarkMode(document.documentElement.classList.contains('dark'));
-  }, []);
+    setMounted(true)
+  }, [])
 
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user && session?.accessToken) {
-      fetchRepositories();
-    } else if (status === 'unauthenticated') {
-      setLoading(true);
-    }
-  }, [status, session]);
+  if (!mounted) return null
 
-  useEffect(() => {
-    if (size.width && size.width >= 640) {
-      setVisibleCount(repositories.length); // Show all repositories on non-mobile devices
-    }
-  }, [size.width, repositories.length]);
-
-  const addRepository = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (status !== 'authenticated' || !session?.accessToken) {
-      setError("Please sign in to add repositories");
-      return;
-    }
-
-    setIsProcessing(true); // Show loading overlay
-    try {
-      setError(null);
-      const response = await fetch("/api/repos/add/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `token ${session.accessToken}`,
-        },
-        body: JSON.stringify({ repoUrl }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error);
-        return;
-      }
-
-      setRepoUrl("");
-      await fetchRepositories();
-    } catch (error) {
-      setError("Failed to add repository");
-      console.error("Error adding repository:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleTrackToggle = async (repoId: string, isTracked: boolean) => {
-    if (status !== 'authenticated' || !session?.accessToken) {
-      setError("Please sign in to manage repositories");
-      return;
-    }
-    setIsProcessing(true); // Show loading overlay
-    try {
-      setError(null);
-      const response = await fetch(isTracked 
-        ? `/api/repos/delete/?repoId=${repoId}` 
-        : '/api/repos/add/', {
-        method: isTracked ? 'DELETE' : 'POST',
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `token ${session.accessToken}`,
-        },
-        body: isTracked ? undefined : JSON.stringify({ repoId }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error);
-        return;
-      }
-
-      await fetchRepositories();
-    } catch (error) {
-      setError(`Failed to ${isTracked ? 'untrack' : 'track'} repository`);
-      console.error(`Error ${isTracked ? 'untracking' : 'tracking'} repository:`, error);
-    } finally {
-      setIsProcessing(false); // hide loading overlay
-    }
-  };
-
-  const showMoreRepositories = () => {
-    setVisibleCount((prevCount) => prevCount + 10); // Load 10 more repositories
-  };
-
-  if (loading || status === 'loading') {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        {isDarkMode ? (
-          <LoadingScannerDark size="lg" />
-        ) : (
-          <LoadingCircuitLight size="lg" />
-        )}
-      </div>
-    );
-  }
-  
-
+  // Check if theme is dark
+  const isDark = theme === "dark"
 
   return (
-    <div className="relative min-h-screen">
-      {isProcessing && <LoadingOverlay isDarkMode={isDarkMode} />}
-      <div className="p-6 md:p-10 z-0">
-        <div className="flex justify-between items-center mb-6">
-          <Header />
-        </div>
-        {/* Show error alert at the top if there's an error */}
-        {error && (
-          <div className="max-w-[90%] mx-auto mb-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <motion.div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url('/network-bg.svg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          y: backgroundY,
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background to-background z-10" />
+
+      {/* Content */}
+      <div className="relative z-20">
+        {/* Header */}
+        <header className="fixed w-full backdrop-blur-lg bg-background/75 z-50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                src={
+                  isDark
+                    ? "/forkspy-dark.png"
+                    : "/forkspy-light.png"
+                }
+                alt="ForkSpy Logo"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+                priority
+              />
+              <span className="text-2xl font-bold">ForkSpy</span>
+            </div>
+            <Button variant="default" asChild>
+              <Link href="/auth/signin">Sign In with GitHub</Link>
+            </Button>
           </div>
-        )}
+        </header>
 
-        {/* Container div to maintain consistent left alignment */}
-        <div className="max-w-[90%] mx-auto space-y-6">
-          <form onSubmit={addRepository} className="flex justify-center w-full">
-            <div className="grid w-full max-w-2xl items-center gap-1.5">
-              <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
-              <div className="flex flex-col md:flex-row w-full md:space-x-2 space-y-1 md:space-y-0 md:items-center">
-                <Input
-                  id="repoUrl"
-                  type="text"
-                  placeholder="https://github.com/username/repo-name"
-                  value={repoUrl}
-                  onChange={(e) => setRepoUrl(e.target.value)}
-                  className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
-                />
-                <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
-                  Add Repository
-                </Button>
-              </div>
-            </div>
-          </form>
-
-          {/* OR divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">OR</span>
-            </div>
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 px-4">
+          <div className="container mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center max-w-4xl mx-auto"
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-500">
+                Know When Your Repos Get Forked. Stay Updated Instantly.
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8">
+                ForkSpy helps you track forks on your GitHub repositories and notifies you instantly when someone forks
+                your project. Never miss out on your repo&rsquo;s impact again.
+              </p>
+              <Button size="lg" className="text-lg px-8" asChild>
+                <Link href="/auth/signin">Start Tracking Repos</Link>
+              </Button>
+            </motion.div>
           </div>
+        </section>
 
-          {/* Repository Dropdown */}
-          <div className="flex justify-center w-full">
-            <div className="grid w-full max-w-2xl items-center gap-1.5">
-              <Label>Select from your repositories</Label>
-              <RepoDropdown 
-                onSelect={(repo) => {
-                  const repoUrl = repo.url;
-                  setIsProcessing(true);
-                  fetch("/api/repos/add", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      'Authorization': `token ${session?.accessToken}`,
-                    },
-                    body: JSON.stringify({ repoUrl }),
-                  })
-                  .then(response => {
-                    if (!response.ok) {
-                      return response.json().then(data => {
-                        throw new Error(data.error);
-                      });
-                    }
-                    return response.json();
-                  })
-                  .then(() => {
-                    fetchRepositories();
-                  })
-                  .catch(error => {
-                    setError(error.message || "Failed to add repository");
-                  })
-                  .finally(() => {
-                    setIsProcessing(false);
-                  });
-                }}
+        {/* Features Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Powerful Features</h2>
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="grid md:grid-cols-3 gap-8"
+            >
+              <FeatureCard
+                icon={<GitFork className="w-8 h-8 text-cyan-500" />}
+                title="Real-time Fork Tracking"
+                description="Instantly know when someone forks your repo and take action."
+              />
+              <FeatureCard
+                icon={<Mail className="w-8 h-8 text-cyan-500" />}
+                title="Email Notifications"
+                description="Receive automatic email alerts whenever a fork happens."
+              />
+              <FeatureCard
+                icon={<Shield className="w-8 h-8 text-cyan-500" />}
+                title="Secure & Fast"
+                description="Built with performance and security in mind, ensuring smooth tracking."
+              />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section className="py-20 px-4 bg-muted/50">
+          <div className="container mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How It Works</h2>
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <StepCard
+                number={1}
+                title="Sign in with GitHub"
+                description="Quick and secure authentication with your GitHub account"
+                icon={<Github className="w-6 h-6" />}
+              />
+              <StepCard
+                number={2}
+                title="Select repositories"
+                description="Choose which repositories you want to track"
+                icon={<GitBranch className="w-6 h-6" />}
+              />
+              <StepCard
+                number={3}
+                title="Get notifications"
+                description="Receive instant alerts when your repos are forked"
+                icon={<Bell className="w-6 h-6" />}
               />
             </div>
           </div>
+        </section>
 
-          <div>
-            <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {repositories
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .slice(0, visibleCount)
-                .map((repo) => (
-                  <GitHubRepoCard
-                    key={repo._id}
-                    repo={repo}
-                    onTrackToggle={handleTrackToggle}
-                    isTracked={true}
-                  />
-                ))}
+        {/* Use Cases Section (New) */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Who Benefits from ForkSpy?</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <UseCaseCard
+                icon={<Users className="w-12 h-12 text-cyan-500" />}
+                title="Open Source Maintainers"
+                description="Stay on top of your project's growth and engage with contributors effectively."
+              />
+              <UseCaseCard
+                icon={<GitBranch className="w-12 h-12 text-cyan-500" />}
+                title="Project Managers"
+                description="Track how your codebase is being used and forked across different teams."
+              />
+              <UseCaseCard
+                icon={<Zap className="w-12 h-12 text-cyan-500" />}
+                title="Individual Developers"
+                description="Understand the impact of your personal projects in the developer community."
+              />
             </div>
-            {visibleCount < repositories.length && (
-              <div className="flex justify-center mt-4 sm:hidden">
-                <Button onClick={showMoreRepositories} className="px-4 py-2 rounded">
-                  Show More
-                </Button>
-              </div>
-            )}
           </div>
-        </div>
+        </section>
+
+        {/* Animated Stats Section (New) */}
+        <section className="py-20 px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
+          <div className="container mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">ForkSpy in Numbers</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <AnimatedStat number={10000} label="Repos Tracked" />
+              <AnimatedStat number={50000} label="Forks Detected" />
+              <AnimatedStat number={5000} label="Happy Users" />
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Start Tracking Your Repos Today!</h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Join thousands of developers who use ForkSpy to monitor their repository impact and grow their open source
+              community.
+            </p>
+            <Button size="lg" variant="default" className="text-lg px-8" asChild>
+              <Link href="/auth/signin">Know Your Repo Impact</Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-8 px-4 border-t border-border">
+          <div className="container mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} ForkSpy. All rights reserved.
+              </p>
+              <div className="flex items-center gap-6">
+                <Link href="#" className="text-muted-foreground hover:text-cyan-500 transition-colors">
+                  <Github className="w-5 h-5" />
+                </Link>
+                <Link href="#" className="text-muted-foreground hover:text-cyan-500 transition-colors">
+                  <Twitter className="w-5 h-5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
-  );
+  )
 }
+
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <motion.div whileHover={{ y: -5 }} className="p-6 rounded-xl bg-card shadow-lg">
+      <div className="mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
+    </motion.div>
+  )
+}
+
+function StepCard({
+  number,
+  title,
+  description,
+  icon,
+}: { number: number; title: string; description: string; icon: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-center"
+    >
+      <div className="w-16 h-16 rounded-full bg-cyan-500 text-white flex items-center justify-center text-xl font-bold mx-auto mb-4 relative">
+        {number}
+        <div className="absolute -right-2 -bottom-2 bg-primary rounded-full p-2">{icon}</div>
+      </div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
+    </motion.div>
+  )
+}
+
+function UseCaseCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <motion.div whileHover={{ scale: 1.05 }} className="p-6 rounded-xl bg-card shadow-lg text-center">
+      <div className="mb-4 flex justify-center">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
+    </motion.div>
+  )
+}
+
+function AnimatedStat({ number, label }: { number: number; label: string }) {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    const end = number
+    const duration = 2000
+    let startTimestamp: number | null = null
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+      setCount(Math.floor(progress * end))
+      if (progress < 1) {
+        window.requestAnimationFrame(step)
+      }
+    }
+
+    window.requestAnimationFrame(step)
+  }, [number])
+
+  return (
+    <div className="text-center">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ type: "spring", stiffness: 100 }}
+        className="text-4xl md:text-5xl font-bold mb-2"
+      >
+        {count.toLocaleString()}+
+      </motion.div>
+      <p className="text-xl">{label}</p>
+    </div>
+  )
+}
+
