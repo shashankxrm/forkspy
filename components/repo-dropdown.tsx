@@ -105,7 +105,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           <SelectValue placeholder="Select a repository" className="truncate" />
         </SelectTrigger>
         <SelectContent 
-        className="w-[280px] md:w-[400px] lg:w-[700px]"
+        className="w-[280px] md:w-[400px] lg:w-[700px]" modal={false}
         onPointerDownOutside={(e) => {
           // Prevent closing when interacting with search on mobile
           if (e.target instanceof HTMLInputElement) {
@@ -114,31 +114,31 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
         }}
     >
           <div className="px-3 pb-2">
-      <div 
-        className="search-container"
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
-        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-        <Input
-          placeholder="Search repositories..."
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onTouchStart={(e) => {
-            e.stopPropagation();
-            // Don't preventDefault here to allow input interaction
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            // Don't preventDefault here to allow input interaction
-          }}
-        />
-    </div>
-  </div>
+            <div 
+              className="search-container"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Input
+                placeholder="Search repositories..."
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  // Don't preventDefault here to allow input interaction
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  // Don't preventDefault here to allow input interaction
+                }}
+              />
+            </div>
+          </div>
           <SelectGroup>
             <SelectLabel>Your Repositories</SelectLabel>
             {filteredRepos.length === 0 ? (
