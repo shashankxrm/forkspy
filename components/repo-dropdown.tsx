@@ -11,16 +11,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useEffect, useState } from "react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import { CommandGroup } from "@/components/ui/command"
-
-import { ChevronDownIcon, GitForkIcon, CheckIcon } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { ChevronDownIcon, GitForkIcon, CheckIcon, SearchIcon } from "lucide-react"
 
 interface Repository {
   id: number
@@ -106,26 +99,30 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
             <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
-          <Command className="rounded-lg border shadow-md">
-            <CommandInput
-              placeholder="Search repositories..."
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-              className="border-none focus:ring-0 h-11"
-            />
-            <CommandList className="max-h-[300px] overflow-auto">
-              <CommandEmpty className="py-6 text-sm text-center text-muted-foreground">
-                No repositories found.
-              </CommandEmpty>
-              <CommandGroup>
-                {filteredRepos.map((repo) => (
-                  <CommandItem
-                    key={repo.id}
-                    onSelect={() => handleValueChange(repo.fullName)}
-                    className="px-4 py-2 cursor-pointer hover:bg-accent group"
-                  >
-                    <div className="flex items-start gap-3 min-w-full">
+        <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-3" align="start">
+          <div className="rounded-lg border">
+            <div className="flex items-center px-3 border-b">
+              <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <Input
+                placeholder="Search repositories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-10 px-2 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
+            <ScrollArea className="max-h-[300px] overflow-auto p-1">
+              {filteredRepos.length === 0 ? (
+                <div className="py-6 text-sm text-center text-muted-foreground">
+                  No repositories found.
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {filteredRepos.map((repo) => (
+                    <button
+                      key={repo.id}
+                      onClick={() => handleValueChange(repo.fullName)}
+                      className="w-full px-4 py-2 flex items-start gap-3 hover:bg-accent rounded-sm group text-left"
+                    >
                       <GitForkIcon className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
                       <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none hover:scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent-foreground/10 hover:scrollbar-thumb-accent-foreground/20">
                         <div className="flex items-center gap-2 w-fit min-w-full">
@@ -140,12 +137,12 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
                           </div>
                         )}
                       </div>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </div>
         </PopoverContent>
       </Popover>
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
