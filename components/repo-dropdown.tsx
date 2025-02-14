@@ -17,8 +17,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandGroup,
-} from "@/components/ui/command"
+} from "cmdk"
+import { CommandGroup } from "@/components/ui/command"
 
 import { CheckIcon, ChevronDownIcon, GitForkIcon } from "lucide-react"
 
@@ -107,8 +107,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
-          <div className="rounded-lg border shadow-md">
-            <Command shouldFilter={false}>
+          <Command>
             <CommandInput
               placeholder="Search repositories..."
               value={searchQuery}
@@ -147,8 +146,6 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
               </CommandGroup>
             </CommandList>
           </Command>
-
-          </div>
         </PopoverContent>
       </Popover>
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
