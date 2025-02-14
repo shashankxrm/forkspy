@@ -110,6 +110,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
       <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
         <div className="rounded-lg border shadow-md">
           <Command>
+            <>
             <CommandInput
               placeholder="Search repositories..."
               value={searchQuery}
@@ -145,6 +146,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
                 </CommandItem>
               ))}
             </CommandList>
+            </>
           </Command>
         </div>
       </PopoverContent>
