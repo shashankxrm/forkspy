@@ -129,14 +129,8 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
                 onKeyDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
                 onPointerDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
               />
             </div>
           </div>
