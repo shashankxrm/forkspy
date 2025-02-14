@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+  
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
@@ -91,4 +92,15 @@
 
 .shadow-card {
   @apply shadow-lg dark:shadow-zinc-900/50;
+}
+input,
+textarea,
+select {
+  @apply bg-white dark:bg-zinc-900 border-gray-200 dark:border-gray-800;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply border-cyan-500 dark:border-cyan-400 ring-1 ring-cyan-500 dark:ring-cyan-400;
 }
