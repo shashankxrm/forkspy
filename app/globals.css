@@ -84,3 +84,11 @@
   background: radial-gradient(circle at top center, rgba(79, 209, 197, 0.2), transparent 40%),
     radial-gradient(circle at bottom left, rgba(99, 179, 237, 0.2), transparent 40%);
 }
+
+.bg-card {
+  @apply bg-white dark:bg-zinc-900 border border-gray-200 dark:border-gray-800;
+}
+
+.shadow-card {
+  @apply shadow-lg dark:shadow-zinc-900/50;
+}
