@@ -99,16 +99,17 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   return (
     <>
       <Popover>
-        <PopoverTrigger asChild>
-          <button className="flex items-center justify-between w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px] px-3 py-2 text-sm bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-md font-medium transition-colors">
-            <span className="truncate">
-              {selectedValue || "Select a repository"}
-            </span>
-            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
-          <Command className="rounded-lg border shadow-md">
+      <PopoverTrigger asChild>
+        <button className="flex items-center justify-between w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px] px-3 py-2 text-sm bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-md font-medium transition-colors">
+          <span className="truncate">
+            {selectedValue || "Select a repository"}
+          </span>
+          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[280px] md:w-[400px] lg:w-[700px] p-0" align="start">
+        <div className="rounded-lg border shadow-md">
+          <Command>
             <CommandInput
               placeholder="Search repositories..."
               value={searchQuery}
@@ -145,8 +146,9 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
               ))}
             </CommandList>
           </Command>
-        </PopoverContent>
-      </Popover>
+        </div>
+      </PopoverContent>
+    </Popover>
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogContent className="sm:max-w-[425px]">
           <AlertDialogHeader>
