@@ -72,7 +72,6 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   }, [])
 
   const handleValueChange = (value: string) => {
-    // Find the repository from our repos array instead of parsing JSON
     const repo = repos.find(r => r.fullName === value)
     if (repo) {
       setSelectedRepo(repo)
@@ -100,7 +99,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
 
   return (
     <>
-    <Select value={selectedValue} onValueChange={handleValueChange}>
+      <Select value={selectedValue} onValueChange={handleValueChange}>
         <SelectTrigger className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px]">
           <SelectValue placeholder="Select a repository" className="truncate" />
         </SelectTrigger>
@@ -118,6 +117,8 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
               className="search-container"
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchEnd={(e) => e.stopPropagation()}
             >
               <Search className="h-4 w-4 text-muted-foreground shrink-0" />
               <Input
@@ -128,14 +129,8 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
                 onKeyDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
                 onPointerDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  // Don't preventDefault here to allow input interaction
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  // Don't preventDefault here to allow input interaction
-                }}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -166,7 +161,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           </SelectGroup>
         </SelectContent>
       </Select>
-    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Track Repository</AlertDialogTitle>
@@ -184,6 +179,6 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      </>
+    </>
   )
 }
