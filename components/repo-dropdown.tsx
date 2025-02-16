@@ -135,34 +135,37 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
             </div>
             <ScrollArea className="max-h-[300px] overflow-auto p-1">
               {filteredRepos.length === 0 ? (
-                <div className="py-6 text-sm text-center text-muted-foreground">
-                  No repositories found.
-                </div>
+              <div className="py-6 text-sm text-center text-muted-foreground">
+                No repositories found.
+              </div>
               ) : (
-                <div className="space-y-1">
-                  {filteredRepos.map((repo) => (
-                  <button
-                    key={repo.id}
-                    onClick={() => handleValueChange(repo.fullName)}
-                    className="w-full px-4 py-2 flex items-start gap-3 hover:bg-accent rounded-sm group text-left"
-                  >
-                    <GitForkIcon className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
-                    <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none hover:scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent-foreground/10 hover:scrollbar-thumb-accent-foreground/20">
-                    <div className="flex items-center gap-2 w-fit min-w-full">
-                      <span className="font-medium whitespace-nowrap">{repo.fullName}</span>
-                      {selectedValue === repo.fullName && (
-                      <CheckIcon className="h-4 w-4 text-primary shrink-0" />
-                      )}
-                    </div>
-                    {repo.description && (
-                      <div className="text-xs text-muted-foreground whitespace-normal">
-                      {repo.description}
-                      </div>
-                    )}
-                    </div>
-                  </button>
-                  ))}
+              <div className="space-y-1">
+                {filteredRepos.map((repo) => (
+                <button
+                key={repo.id}
+                onClick={() => handleValueChange(repo.fullName)}
+                className="w-full px-4 py-2 flex items-start gap-3 hover:bg-accent rounded-sm group text-left"
+                >
+                <GitForkIcon className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
+                <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none hover:scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent-foreground/10 hover:scrollbar-thumb-accent-foreground/20">
+                <div className="flex items-center gap-2 w-fit min-w-full">
+                  <span className="font-medium whitespace-nowrap">
+                  <span className="block md:hidden">{repo.name}</span>
+                  <span className="hidden md:block">{repo.fullName}</span>
+                  </span>
+                  {selectedValue === repo.fullName && (
+                  <CheckIcon className="h-4 w-4 text-primary shrink-0" />
+                  )}
                 </div>
+                {repo.description && (
+                  <div className="text-xs text-muted-foreground whitespace-normal">
+                  {repo.description}
+                  </div>
+                )}
+                </div>
+                </button>
+                ))}
+              </div>
               )}
             </ScrollArea>
           </div>
