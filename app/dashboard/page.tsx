@@ -213,17 +213,17 @@ export default function Dashboard() {
             <div className="grid w-full max-w-2xl items-center gap-1.5">
               <Label htmlFor="repoUrl">Enter Repository URL to start tracking</Label>
               <div className="flex flex-col md:flex-row w-full md:space-x-2 space-y-1 md:space-y-0 md:items-center">
-                <Input
-                  id="repoUrl"
-                  type="text"
-                  placeholder="https://github.com/username/repo-name"
-                  value={repoUrl}
-                  onChange={(e) => setRepoUrl(e.target.value)}
-                  className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
-                />
-                <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
-                  Add Repository
-                </Button>
+          <Input
+            id="repoUrl"
+            type="text"
+            placeholder="https://github.com/username/repo-name"
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+            className="border p-2 flex-1 rounded text-black dark:text-white max-w-sm"
+          />
+          <Button type="submit" className="px-4 py-2 rounded whitespace-nowrap max-w-32">
+            Add Repository
+          </Button>
               </div>
             </div>
           </form>
@@ -243,59 +243,63 @@ export default function Dashboard() {
             <div className="grid w-full max-w-2xl items-center gap-1.5">
               <Label>Select from your repositories</Label>
               <RepoDropdown 
-                onSelect={(repo) => {
-                  const repoUrl = repo.url;
-                  setIsProcessing(true);
-                  fetch("/api/repos/add", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      'Authorization': `token ${session?.accessToken}`,
-                    },
-                    body: JSON.stringify({ repoUrl }),
-                  })
-                  .then(response => {
-                    if (!response.ok) {
-                      return response.json().then(data => {
-                        throw new Error(data.error);
-                      });
-                    }
-                    return response.json();
-                  })
-                  .then(() => {
-                    fetchRepositories();
-                  })
-                  .catch(error => {
-                    setError(error.message || "Failed to add repository");
-                  })
-                  .finally(() => {
-                    setIsProcessing(false);
-                  });
-                }}
+          onSelect={(repo) => {
+            const repoUrl = repo.url;
+            setIsProcessing(true);
+            fetch("/api/repos/add", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                'Authorization': `token ${session?.accessToken}`,
+              },
+              body: JSON.stringify({ repoUrl }),
+            })
+            .then(response => {
+              if (!response.ok) {
+                return response.json().then(data => {
+            throw new Error(data.error);
+                });
+              }
+              return response.json();
+            })
+            .then(() => {
+              fetchRepositories();
+            })
+            .catch(error => {
+              setError(error.message || "Failed to add repository");
+            })
+            .finally(() => {
+              setIsProcessing(false);
+            });
+          }}
               />
             </div>
           </div>
 
           <div>
             <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {repositories
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .slice(0, visibleCount)
-                .map((repo) => (
-                  <GitHubRepoCard
-                    key={repo._id}
-                    repo={repo}
-                    onTrackToggle={handleTrackToggle}
-                    isTracked={true}
-                  />
-                ))}
-            </div>
+            {repositories.length === 0 ? (
+              <p className="text-center">No repositories tracked. Add repositories to start tracking.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {repositories
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, visibleCount)
+            .map((repo) => (
+              <GitHubRepoCard
+                key={repo._id}
+                repo={repo}
+                onTrackToggle={handleTrackToggle}
+                isTracked={true}
+              />
+            ))}
+              </div>
+            )}
             {visibleCount < repositories.length && (
               <div className="flex justify-center mt-4 sm:hidden">
-                <Button onClick={showMoreRepositories} className="px-4 py-2 rounded">
-                  Show More
-                </Button>
+          <Button onClick={showMoreRepositories} className="px-4 py-2 rounded">
+            Show More
+          </Button>
               </div>
             )}
           </div>
