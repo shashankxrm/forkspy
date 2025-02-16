@@ -87,7 +87,30 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
   }
 
   if (error) {
-    return <div className="text-sm text-destructive">{error}</div>
+    return (
+      <div className="text-sm text-destructive">
+        <AlertDialog open={true} onOpenChange={() => setError(null)}>
+          <AlertDialogContent className="sm:max-w-[425px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-semibold">
+                Error
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-muted-foreground">
+                {error}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogAction 
+                onClick={() => setError(null)}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Close
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    )
   }
 
   return (
