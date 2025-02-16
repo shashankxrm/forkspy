@@ -279,7 +279,9 @@ export default function Dashboard() {
           <div>
             <h2 className="text-xl font-bold mb-4">Tracked Repositories</h2>
             {repositories.length === 0 ? (
-              <p className="text-center">No repositories tracked. Add repositories to start tracking.</p>
+                <div className="flex justify-center items-center h-32">
+                <p className="text-center text-gray-500">No repositories tracked. Add repositories to start tracking.</p>
+                </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {repositories
