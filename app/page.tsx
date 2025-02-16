@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import { GitFork, Mail, Shield, Github, Twitter, GitBranch, Bell, Users, Zap } from "lucide-react"
+import { GitFork, Mail, Shield, Github, Twitter, GitBranch, Bell, Users, Zap, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -76,9 +76,14 @@ export default function LandingPage() {
               />
               <span className="text-2xl font-bold">ForkSpy</span>
             </div>
-            <Button variant="default" asChild>
-              <Link href="/auth/signin">Sign In with GitHub</Link>
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button variant="default" asChild>
+                <Link href="/auth/signin">Sign In with GitHub</Link>
+              </Button>
+              <Button variant="default" asChild>
+                <Link href="/auth/signin"><Star />On Github</Link>
+              </Button>
+            </div>
           </div>
           </motion.header>
           )}
@@ -221,7 +226,7 @@ export default function LandingPage() {
                 © {new Date().getFullYear()} ForkSpy. All rights reserved.
               </p>
               <div className="flex items-center gap-6">
-                <Link href="#" className="text-muted-foreground hover:text-cyan-500 transition-colors">
+                <Link href="https://github.com/shashankxrm/forkspy" className="text-muted-foreground hover:text-cyan-500 transition-colors">
                   <Github className="w-5 h-5" />
                 </Link>
                 <Link href="#" className="text-muted-foreground hover:text-cyan-500 transition-colors">
