@@ -80,7 +80,7 @@ export default function LandingPage() {
               <Button variant="default" asChild>
                 <Link href="/auth/signin">Sign In with GitHub</Link>
               </Button>
-              <Button variant="default" asChild className="hidden md:block">
+              <Button variant="default" asChild className="hidden md:flex">
                 <Link href="/auth/signin"><Star />On Github</Link>
               </Button>
             </div>
