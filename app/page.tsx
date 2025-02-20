@@ -81,7 +81,10 @@ export default function LandingPage() {
                 <Link href="/auth/signin">Sign In with GitHub</Link>
               </Button>
               <Button variant="default" asChild className="hidden md:flex">
-                <Link href="/auth/signin"><Star />On Github</Link>
+                <Link href="https://github.com/shashankxrm/forkspy" target="_blank" rel="noopener noreferrer">
+                  <Star/>
+                  on GitHub
+                </Link>
               </Button>
             </div>
           </div>
