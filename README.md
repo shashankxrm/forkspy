@@ -95,7 +95,7 @@ Here's why you should use forkspy:
 
 ### Built With
 
-* [![Next][Next.js]][(https://img.shields.io/badge/:badgeContent)]
+* <img src="https://img.shields.io/badge/:NextJS" />
 * 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
