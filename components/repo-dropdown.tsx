@@ -121,7 +121,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
           <button className="flex items-center justify-between w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px] px-3 py-2 text-sm bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-md font-medium transition-colors">
             <span className="truncate">
               {selectedRepos.length > 0 
-                ? `${selectedRepos.length} repository${selectedRepos.length > 1 ? 'ies' : ''} selected`
+                ? `${selectedRepos.length} repositor${selectedRepos.length > 1 ? 'ies' : 'y'} selected`
                 : "Select repositories"}
             </span>
             <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
