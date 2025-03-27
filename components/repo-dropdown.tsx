@@ -119,11 +119,9 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex items-center justify-between w-full max-w-[280px] md:max-w-[400px] lg:max-w-[700px] px-3 py-2 text-sm bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-md font-medium transition-colors">
-            <span className="truncate">
-              {selectedRepos.length > 0 
-                ? `${selectedRepos.length} repositor${selectedRepos.length > 1 ? 'ies' : 'y'} selected`
-                : "Select repositories"}
-            </span>
+          <span className="text-sm text-muted-foreground">
+            {selectedRepos.length} {selectedRepos.length === 1 ? 'repository' : 'repositories'} selected
+          </span>
             <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </button>
         </PopoverTrigger>
