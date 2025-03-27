@@ -243,35 +243,32 @@ export default function Dashboard() {
             <div className="grid w-full max-w-2xl items-center gap-1.5">
               <Label>Select from your repositories</Label>
               <RepoDropdown 
-          onSelect={(repo) => {
-            const repoUrl = repo.url;
-            setIsProcessing(true);
-            fetch("/api/repos/add", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                'Authorization': `token ${session?.accessToken}`,
-              },
-              body: JSON.stringify({ repoUrl }),
-            })
-            .then(response => {
-              if (!response.ok) {
-                return response.json().then(data => {
-            throw new Error(data.error);
-                });
-              }
-              return response.json();
-            })
-            .then(() => {
-              fetchRepositories();
-            })
-            .catch(error => {
-              setError(error.message || "Failed to add repository");
-            })
-            .finally(() => {
-              setIsProcessing(false);
-            });
-          }}
+                onSelect={async (repos) => {
+                  setIsProcessing(true);
+                  try {
+                    // Create an array of promises for each repository
+                    const promises = repos.map(repo => 
+                      fetch("/api/repos/add", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          'Authorization': `token ${session?.accessToken}`,
+                        },
+                        body: JSON.stringify({ repoUrl: repo.url }),
+                      })
+                    );
+                    
+                    // Process all repository additions in parallel
+                    await Promise.all(promises);
+                    // Refresh the repository list after all are added
+                    await fetchRepositories();
+                  } catch (error) {
+                    setError("Failed to add some repositories");
+                    console.error("Error adding repositories:", error);
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }}
               />
             </div>
           </div>
