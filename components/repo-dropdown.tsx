@@ -176,7 +176,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
             <div className="p-3 border-t">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  {selectedRepos.length} repository{selectedRepos.length !== 1 ? 'ies' : ''} selected
+                  {selectedRepos.length} repositor{selectedRepos.length !== 1 ? 'ies' : 'y'} selected
                 </span>
                 <Button 
                   onClick={() => setShowDialog(true)}
@@ -197,7 +197,7 @@ export function RepoDropdown({ onSelect }: RepoDropdownProps) {
               Track Repositories
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base text-muted-foreground">
-              Are you sure you want to track {selectedRepos.length} repository{selectedRepos.length !== 1 ? 'ies' : ''}? 
+              Are you sure you want to track {selectedRepos.length} repositor{selectedRepos.length !== 1 ? 'ies' : 'y'}? 
               This will set up webhooks and track all forks.
             </AlertDialogDescription>
           </AlertDialogHeader>
