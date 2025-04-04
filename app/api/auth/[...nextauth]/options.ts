@@ -28,6 +28,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
+    signOut: '/auth/signin'
   },
   callbacks: {
     async signIn({ user}) {
@@ -74,6 +75,25 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // If the URL is a callback URL from GitHub OAuth
+      if (url.includes('callback') && url.includes('github')) {
+        return `${baseUrl}/dashboard`;
+      }
+      
+      // If it's our own URL, allow it
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      
+      // If it's GitHub URL, allow it
+      if (url.startsWith('https://github.com')) {
+        return url;
+      }
+      
+      // Default to dashboard for successful auth
+      return `${baseUrl}/dashboard`;
+    }
   },
   debug: process.env.NODE_ENV === 'development',
 };

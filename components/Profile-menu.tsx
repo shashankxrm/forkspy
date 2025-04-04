@@ -44,7 +44,7 @@ export function ProfileMenu({ user, onSignOut }: ProfileMenuProps) {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
