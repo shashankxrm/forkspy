@@ -2,9 +2,20 @@ name: Playwright Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, playwright]
   pull_request:
     branches: [main]
+  # Allow manual triggering
+  # workflow_dispatch:
+  #   inputs:
+  #     environment:
+  #       description: 'Environment to test against'
+  #       required: true
+  #       default: 'local'
+  #       type: choice
+  #       options:
+  #         - local
+  #         - production
 
 jobs:
   test:
@@ -16,12 +27,14 @@ jobs:
       GITHUB_ID: ${{ secrets.GH_AUTH_ID }}
       GITHUB_SECRET: ${{ secrets.GH_AUTH_SECRET }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
+      # Use production URL for production testing, otherwise use local
+      # TEST_BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://forkspy.vercel.app' || '' }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -32,7 +45,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      # Only build and start local server if testing against local environment
       - name: Start application in background
+        # if: ${{ github.event.inputs.environment != 'production' }}
         run: |
           npm run build
           npm run start &
@@ -43,7 +58,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
