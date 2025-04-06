@@ -84,19 +84,19 @@ export default function RootLayout({
     <Provider>
       <html lang="en" suppressHydrationWarning>
         <body>
-            <ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-            >
+            storageKey="forkspy-theme"
+          >
             {/* <UnderConstruction /> */}
             <div style={{ position: 'fixed', bottom: '10px', right: '10px', zIndex: 1000 }}>
               <ModeToggle />
             </div>
             {children}
-            </ThemeProvider>
-          
+          </ThemeProvider>
         </body>
       </html>
     </Provider>

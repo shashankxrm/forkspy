@@ -3,14 +3,28 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-
 import { Button } from "@/components/ui/button"
 
 export function ModeToggle() {
+  const [mounted, setMounted] = React.useState(false)
   const { theme, setTheme } = useTheme()
 
+  // useEffect to handle mounting state
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
+    setTheme(theme === "dark" ? "light" : "dark")
+  }
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="icon">
+        <span className="sr-only">Loading theme</span>
+      </Button>
+    )
   }
 
   return (
