@@ -9,7 +9,7 @@ interface SignInCardProps {
 
 export function SignInCard({ onSignIn }: SignInCardProps) {
   return (
-    <Card className="w-[380px]">
+    <Card className="w-[380px]" data-testid="sign-in-card">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <Image
@@ -31,7 +31,7 @@ export function SignInCard({ onSignIn }: SignInCardProps) {
         <CardDescription>Track GitHub repository forks with ease</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button className="w-full" onClick={onSignIn}>
+        <Button className="w-full" onClick={onSignIn} data-testid="sign-in-button">
           <Github className="mr-2 h-4 w-4" />
           Sign in with GitHub
         </Button>

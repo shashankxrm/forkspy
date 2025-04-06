@@ -22,6 +22,36 @@ export async function mockAuthenticatedSession(page: Page, email = 'test@example
       })
     });
   });
+  
+  // Mock CSRF token
+  await page.route('**/api/auth/csrf', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ csrfToken: 'mock-csrf-token' })
+    });
+  });
+  
+  // Block calls to GitHub API to prevent real API calls
+  await page.route('**/api.github.com/**', (route) => {
+    const url = route.request().url();
+    
+    // Return empty arrays for repos endpoints
+    if (url.includes('/repos')) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([])
+      });
+    } else {
+      // Default mock response for other GitHub API calls
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true })
+      });
+    }
+  });
 }
 
 export async function mockGitHubApi(page: Page) {
