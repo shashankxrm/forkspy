@@ -1,16 +1,22 @@
 import { Page } from '@playwright/test';
 
 export async function mockAuthenticatedSession(page: Page, email = 'test@example.com') {
+  // Navigate to a page first to ensure we can set storage
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
   // Mock session storage
   await page.evaluate((userEmail) => {
     localStorage.setItem('next-auth.session-token', 'mock-token');
+    localStorage.setItem('next-auth.callback-url', 'http://localhost:3000');
     sessionStorage.setItem('userProfile', JSON.stringify({
       email: userEmail,
       name: 'Test User'
     }));
+    sessionStorage.setItem('authToken', 'mock-token');
   }, email);
 
-  // Mock session endpoint
+  // Mock session endpoint - this is critical for NextAuth
   await page.route('**/api/auth/session', (route) => {
     route.fulfill({
       status: 200,
@@ -29,6 +35,40 @@ export async function mockAuthenticatedSession(page: Page, email = 'test@example
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ csrfToken: 'mock-csrf-token' })
+    });
+  });
+  
+  // Mock providers endpoint
+  await page.route('**/api/auth/providers', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        github: {
+          id: "github",
+          name: "GitHub",
+          type: "oauth",
+          signinUrl: "http://localhost:3000/api/auth/signin/github",
+          callbackUrl: "http://localhost:3000/api/auth/callback/github"
+        }
+      })
+    });
+  });
+
+  // Mock empty repositories endpoints
+  await page.route('**/api/repos/get/**', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([])
+    });
+  });
+  
+  await page.route('**/api/repos/list**', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([])
     });
   });
   

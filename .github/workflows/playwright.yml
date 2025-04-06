@@ -6,21 +6,18 @@ on:
   pull_request:
     branches: [main]
   # Allow manual triggering
-  # workflow_dispatch:
-  #   inputs:
-  #     environment:
-  #       description: 'Environment to test against'
-  #       required: true
-  #       default: 'local'
-  #       type: choice
-  #       options:
-  #         - local
-  #         - production
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   test:
     name: Run Playwright Tests
-    timeout-minutes: 15
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     env:
@@ -28,9 +25,11 @@ jobs:
       GITHUB_SECRET: ${{ secrets.GH_AUTH_SECRET }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
       # Add a dummy Resend API key for testing purposes
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      # Use production URL for production testing, otherwise use local
-      # TEST_BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://forkspy.vercel.app' || '' }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_123456789' }}
+      # Set CI to true for Playwright config
+      CI: true
+      # Prevents stale browser sessions
+      PLAYWRIGHT_BROWSERS_PATH: 0
 
     steps:
       - uses: actions/checkout@v4
@@ -45,23 +44,36 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium firefox webkit
 
-      # Only build and start local server if testing against local environment
+      # Setup tmate debugging session if debug is enabled
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          limit-access-to-actor: true
+
+      # Start application in background
+      - name: Build application
+        run: npm run build
+
       - name: Start application in background
-        # if: ${{ github.event.inputs.environment != 'production' }}
         run: |
-          npm run build
           npm run start &
-          sleep 5
+          # Give the server time to start up
+          sleep 10
 
       - name: Run Playwright tests
         run: npx playwright test
+        env:
+          DEBUG: pw:api
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 30

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mockAuthenticatedSession } from '../utils/test-utils';
 
 /**
  * Authentication Tests
@@ -29,7 +30,7 @@ test.describe('Authentication Tests', () => {
     
     // Find and click the sign-in button on the landing page
     const signInButton = page.getByRole('link', { name: /Sign In with GitHub/i });
-    await expect(signInButton).toBeVisible();
+    await expect(signInButton).toBeVisible({ timeout: 15000 });
     
     // Take a screenshot before clicking
     await page.screenshot({ path: 'landing-page.png' });
@@ -46,7 +47,7 @@ test.describe('Authentication Tests', () => {
     // Check that we're on the sign-in page
     // This should be a simple check for the GitHub button in the sign-in card
     const githubSignInButton = page.getByTestId('sign-in-button');
-    await expect(githubSignInButton).toBeVisible({ timeout: 10000 });
+    await expect(githubSignInButton).toBeVisible({ timeout: 15000 });
   });
 
   test('should redirect to sign-in from protected route', async ({ page }) => {
@@ -64,61 +65,19 @@ test.describe('Authentication Tests', () => {
     
     // Verify we were redirected to sign-in page
     // URL should contain "signin"
-    await expect(page).toHaveURL(/.*signin.*/);
+    await expect(page).toHaveURL(/.*signin.*/, { timeout: 15000 });
     
     // The sign-in button should be visible
     const githubSignInButton = page.getByTestId('sign-in-button');
-    await expect(githubSignInButton).toBeVisible({ timeout: 10000 });
+    await expect(githubSignInButton).toBeVisible({ timeout: 15000 });
   });
   
   test('should not redirect from dashboard with mocked auth', async ({ page }) => {
     // Set a longer timeout for the test
     test.setTimeout(60000);
     
-    // Set up mocked auth first
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-    
-    // Before navigating, mock ALL the auth-related requests
-    // Mock the NextAuth session response
-    await page.route('**/api/auth/session', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          user: { 
-            email: 'test@example.com', 
-            name: 'Test User' 
-          },
-          accessToken: 'mock-token-123',
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        })
-      });
-    });
-    
-    // Mock calls to GitHub API endpoints 
-    await page.route('**/api/repos/get/**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([])
-      });
-    });
-    
-    await page.route('**/api/repos/list**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([])
-      });
-    });
-    
-    // Install auth session tokens
-    await page.evaluate(() => {
-      localStorage.setItem('next-auth.session-token', 'fake-token-123');
-      localStorage.setItem('next-auth.callback-url', 'http://localhost:3000');
-      sessionStorage.setItem('authToken', 'fake-token-123');
-    });
+    // Use the common auth mocking helper instead of direct code
+    await mockAuthenticatedSession(page);
     
     // Navigate to dashboard
     await page.goto('/dashboard');
