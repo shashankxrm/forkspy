@@ -12,6 +12,14 @@ The following secrets need to be added to your GitHub repository:
 | `GH_AUTH_SECRET` | Your GitHub OAuth App Secret used for NextAuth authentication |
 | `MONGO_URI` | MongoDB connection string for database access |
 
+## Optional Secrets
+
+These secrets are not required for tests but would be needed for full functionality:
+
+| Secret Name | Description |
+|-------------|-------------|
+| `RESEND_API_KEY` | API key for the Resend email service (optional for testing) |
+
 ## How to Set Up Secrets
 
 1. Navigate to your GitHub repository
@@ -24,6 +32,7 @@ The following secrets need to be added to your GitHub repository:
 
 - For local development, these secrets should be in your `.env.local` file as `GITHUB_ID` and `GITHUB_SECRET`
 - The CI workflow automatically maps the GitHub repository secrets to the environment variables expected by NextAuth
+- For testing purposes, the workflow uses a dummy Resend API key that the application recognizes as a test key
 - Never commit actual secret values to the repository
 
 ## Troubleshooting

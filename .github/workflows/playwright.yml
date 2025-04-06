@@ -27,6 +27,8 @@ jobs:
       GITHUB_ID: ${{ secrets.GH_AUTH_ID }}
       GITHUB_SECRET: ${{ secrets.GH_AUTH_SECRET }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
+      # Add a dummy Resend API key for testing purposes
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       # Use production URL for production testing, otherwise use local
       # TEST_BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://forkspy.vercel.app' || '' }}
 

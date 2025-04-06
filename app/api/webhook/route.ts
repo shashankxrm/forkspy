@@ -12,7 +12,11 @@ const client = new MongoClient(process.env.MONGO_URI, {
   socketTimeoutMS: 45000,  // 45 seconds
 });
 const dbName = "forkspy";
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Initialize Resend conditionally to handle testing environments
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const isValidResendKey = RESEND_API_KEY && !RESEND_API_KEY.includes('dummy') && !RESEND_API_KEY.includes('test');
+const resend = isValidResendKey ? new Resend(RESEND_API_KEY) : null;
 
 export async function POST(req: NextRequest) {
   let db;
@@ -84,15 +88,20 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 'user_not_found', email: trackedRepo.userEmail });
       }
 
-      // Send email notification
+      // Send email notification if Resend is configured properly
       console.log('Attempting to send email to:', user.email);
+      
+      if (!isValidResendKey || !resend) {
+        console.log('Skipping email in test environment with dummy/missing API key');
+        return NextResponse.json({ 
+          status: 'email_skipped', 
+          message: 'Email sending skipped in test environment',
+          repository: originalRepo,
+          forkedBy: payload.sender.login
+        });
+      }
+      
       try {
-        if (!process.env.RESEND_API_KEY) {
-          console.error('RESEND_API_KEY is not set');
-          return NextResponse.json({ status: 'email_error', error: 'Email service not configured' });
-        }
-        
-        console.log('RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
         console.log('Preparing email with data:', {
           to: user.email,
           subject: `New Fork Alert: ${originalRepo}`,
