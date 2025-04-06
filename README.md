@@ -22,6 +22,9 @@
     <a href="mailto:shashankreddy0608@gmail.com">Report Bug</a>
     &middot;
     <a href="mailto:shashankreddy0608@gmail.com">Request Feature</a>
+    <br />
+    <br />
+    <img src="https://github.com/shashankxrm/forkspy/actions/workflows/playwright.yml/badge.svg" alt="Playwright Tests" />
   </p>
 </div>
 
@@ -41,6 +44,7 @@
       <a href="#getting-started">Getting Started</a>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#testing">Testing</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -53,7 +57,7 @@
 
 <img src="public/dashboard.png" />
 
-ForkSpy is a GitHub repository tracking tool that notifies users when their tracked repositories are forked. It helps developers stay informed about their project’s reach and impact by providing real-time email notifications whenever a fork occurs.
+ForkSpy is a GitHub repository tracking tool that notifies users when their tracked repositories are forked. It helps developers stay informed about their project's reach and impact by providing real-time email notifications whenever a fork occurs.
 
 Here's why you should use forkspy:
 * Stay Informed Instantly – Get real-time email notifications whenever someone forks your repository. No more manually checking GitHub!
@@ -84,7 +88,7 @@ To get a local copy follow these simple example steps.
 <!-- USAGE EXAMPLES -->
 ## Use Cases
 
-🚀 Open Source Project Growth – Track forks to measure your project’s popularity and identify contributors who might collaborate.
+🚀 Open Source Project Growth – Track forks to measure your project's popularity and identify contributors who might collaborate.
 
 📢 Community Engagement – Get notified when someone forks your repo and reach out to them for discussions, PRs, or feedback.
 
@@ -95,7 +99,37 @@ To get a local copy follow these simple example steps.
 📊 Trend Analysis – Identify which types of projects gain traction and adjust your development focus accordingly.
 
 
+<!-- TESTING -->
+## Testing
 
+ForkSpy has a comprehensive test suite using Playwright for end-to-end testing. Tests cover:
+
+* Authentication flows
+* Dashboard functionality
+* Repository management
+* Error handling
+
+### Running Tests Locally
+
+```bash
+# Install dependencies
+npm install
+
+# Run the tests
+npx playwright test
+```
+
+### CI/CD
+
+We use GitHub Actions for continuous integration. Every pull request and push to the main branch triggers:
+
+1. Application build
+2. Automated test runs across multiple browsers
+3. Test report generation
+
+The test badge at the top of this README shows the current test status for the main branch.
+
+To see detailed test reports, check the "Actions" tab in the GitHub repository.
 
 
 
