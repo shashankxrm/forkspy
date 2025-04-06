@@ -1,5 +1,17 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Authentication Tests
+ * 
+ * These tests verify the core authentication functionality of the application:
+ * - Landing page navigation to sign-in
+ * - Protected route redirects for unauthenticated users
+ * - Authenticated session handling
+ * 
+ * The authentication mocking approach uses direct route interception and
+ * localStorage/sessionStorage manipulation rather than trying to perform
+ * an actual OAuth flow with GitHub.
+ */
 test.describe('Authentication Tests', () => {
   test('should display landing page and navigate to sign-in', async ({ page }) => {
     // Set a longer timeout for the test
