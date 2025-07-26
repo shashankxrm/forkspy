@@ -37,7 +37,7 @@ interface HoverlayProps {
       repoName: string
     }>
   }
-  triggerRef: React.RefObject<HTMLDivElement>
+  triggerRef: React.RefObject<HTMLDivElement | null>
   isVisible: boolean
   onClose: () => void
   onMouseEnter: () => void

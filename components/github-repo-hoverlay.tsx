@@ -36,7 +36,7 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
   const [hoverlayData, setHoverlayData] = useState<HoverlayData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
-  const hoverTimeoutRef = useRef<NodeJS.Timeout>()
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchHoverlayData = async () => {
     if (hoverlayData || isLoading) return // Don't fetch if already have data or currently loading
@@ -58,25 +58,25 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
   const handleMouseEnter = () => {
     // Only show on desktop (hover-capable devices)
     if (window.matchMedia("(hover: hover)").matches) {
-      clearTimeout(hoverTimeoutRef.current)
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
       setIsHoverlayVisible(true)
       fetchHoverlayData() // Fetch data when hover starts
     }
   }
 
   const handleMouseLeave = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHoverlayVisible(false)
     }, 300)
   }
 
   const handleHoverlayMouseEnter = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
   }
 
   const handleHoverlayMouseLeave = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHoverlayVisible(false)
     }, 300)

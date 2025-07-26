@@ -65,7 +65,7 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
   const [hoverlayData, setHoverlayData] = useState<HoverlayData | null>(null)
   const [isLoadingHoverlay, setIsLoadingHoverlay] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
-  const hoverTimeoutRef = useRef<NodeJS.Timeout>()
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchHoverlayData = async () => {
     if (!repoDetails || hoverlayData || isLoadingHoverlay) return
@@ -87,25 +87,25 @@ export function GitHubRepoCard({ repo, onTrackToggle, isTracked }: RepoCardProps
   const handleMouseEnter = () => {
     // Only show on desktop (hover-capable devices)
     if (window.matchMedia("(hover: hover)").matches) {
-      clearTimeout(hoverTimeoutRef.current)
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
       setIsHoverlayVisible(true)
       fetchHoverlayData()
     }
   }
 
   const handleMouseLeave = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHoverlayVisible(false)
     }, 300)
   }
 
   const handleHoverlayMouseEnter = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
   }
 
   const handleHoverlayMouseLeave = () => {
-    clearTimeout(hoverTimeoutRef.current)
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
     hoverTimeoutRef.current = setTimeout(() => {
       setIsHoverlayVisible(false)
     }, 300)
