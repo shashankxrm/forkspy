@@ -93,9 +93,17 @@ export async function GET(request: Request) {
     const contributors = await contributorsResponse.json();
     const forks = await forksResponse.json();
 
+    // Calculate forks in the last 24 hours
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const forksLast24h = forks.filter((fork: GitHubFork) => {
+      const forkDate = new Date(fork.created_at);
+      return forkDate >= twentyFourHoursAgo;
+    }).length;
+
     // Process contributors data
     const recentActivity = {
-      forksLast24h: forks.length, // This is an approximation; GitHub API doesn't provide 24h filter
+      forksLast24h: forksLast24h, // Now showing actual forks in last 24 hours
       contributors: await Promise.all(
         contributors.slice(0, 10).map(async (contributor: GitHubContributor) => {
           // Fetch recent commits for this contributor from the source repository
