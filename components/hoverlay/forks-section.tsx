@@ -12,17 +12,18 @@ interface ForksSectionProps {
     forkedAgo: string
     commitHash: string | null
     commitAgo: string | null
+    repoOwner: string
+    repoName: string
   }>
-  repoName: string
   onViewMore: () => void
 }
 
-export function ForksSection({ recentForks, repoName, onViewMore }: ForksSectionProps) {
+export function ForksSection({ recentForks, onViewMore }: ForksSectionProps) {
   return (
     <div className="space-y-3">
       <div className="space-y-2">
         {recentForks.slice(0, 5).map((fork, index) => (
-          <ForkItem key={index} fork={fork} repoName={repoName} />
+          <ForkItem key={index} fork={fork} />
         ))}
       </div>
 

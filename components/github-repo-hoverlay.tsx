@@ -2,18 +2,65 @@
 import { useState, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Star, GitFork, Circle, Clock } from "lucide-react"
-import { Hoverlay } from "./components/hoverlay/hoverlay"
+import { Hoverlay } from "./hoverlay/hoverlay"
+import { GitHubRepo } from "@/types/github-repo"
 
-function RepoCard({ repo }: { repo: (typeof mockRepos)[0] }) {
+interface HoverlayData {
+  recentActivity: {
+    forksLast24h: number
+    contributors: Array<{
+      username: string
+      avatar: string
+      commitHash: string | null
+      prNumber: number | null
+      timeAgo: string | null
+      totalCommits: number
+      repoOwner: string
+      repoName: string
+    }>
+  }
+  recentForks: Array<{
+    username: string
+    commits: number
+    totalCommits: number
+    forkedAgo: string
+    commitHash: string | null
+    commitAgo: string | null
+    repoOwner: string
+    repoName: string
+  }>
+}
+
+function RepoCard({ repo }: { repo: GitHubRepo }) {
   const [isHoverlayVisible, setIsHoverlayVisible] = useState(false)
+  const [hoverlayData, setHoverlayData] = useState<HoverlayData | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const hoverTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const fetchHoverlayData = async () => {
+    if (hoverlayData || isLoading) return // Don't fetch if already have data or currently loading
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/hoverlay?repo=${repo.name}`)
+      if (response.ok) {
+        const data = await response.json()
+        setHoverlayData(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch hoverlay data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleMouseEnter = () => {
     // Only show on desktop (hover-capable devices)
     if (window.matchMedia("(hover: hover)").matches) {
       clearTimeout(hoverTimeoutRef.current)
       setIsHoverlayVisible(true)
+      fetchHoverlayData() // Fetch data when hover starts
     }
   }
 
@@ -66,34 +113,45 @@ function RepoCard({ repo }: { repo: (typeof mockRepos)[0] }) {
               </div>
               <div className="flex items-center gap-1">
                 <Star className="h-3 w-3" />
-                <span>{repo.stars.toLocaleString()}</span>
+                <span>{repo.stargazers_count.toLocaleString()}</span>
               </div>
               <div className="flex items-center gap-1">
                 <GitFork className="h-3 w-3" />
-                <span>{repo.forks}</span>
+                <span>{repo.forks_count}</span>
               </div>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
-              <span>Updated {repo.updatedAt}</span>
+              <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Hoverlay
-        repo={repo}
-        triggerRef={cardRef}
-        isVisible={isHoverlayVisible}
-        onClose={() => setIsHoverlayVisible(false)}
-        onMouseEnter={handleHoverlayMouseEnter}
-        onMouseLeave={handleHoverlayMouseLeave}
-      />
+      {hoverlayData && (
+        <Hoverlay
+          repo={{
+            id: repo.id,
+            name: repo.name,
+            recentActivity: hoverlayData.recentActivity,
+            recentForks: hoverlayData.recentForks,
+          }}
+          triggerRef={cardRef}
+          isVisible={isHoverlayVisible}
+          onClose={() => setIsHoverlayVisible(false)}
+          onMouseEnter={handleHoverlayMouseEnter}
+          onMouseLeave={handleHoverlayMouseLeave}
+        />
+      )}
     </>
   )
 }
 
-export default function Component() {
+interface GitHubRepoHoverlayProps {
+  repos: GitHubRepo[]
+}
+
+export default function GitHubRepoHoverlay({ repos }: GitHubRepoHoverlayProps) {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -105,7 +163,7 @@ export default function Component() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {mockRepos.map((repo) => (
+          {repos.map((repo) => (
             <RepoCard key={repo.id} repo={repo} />
           ))}
         </div>

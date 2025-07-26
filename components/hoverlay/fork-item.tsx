@@ -12,50 +12,53 @@ interface ForkItemProps {
     forkedAgo: string
     commitHash: string | null
     commitAgo: string | null
+    repoOwner: string
+    repoName: string
   }
-  repoName: string
-  showFullDetails?: boolean
 }
 
-export function ForkItem({ fork, repoName, showFullDetails = false }: ForkItemProps) {
+export function ForkItem({ fork }: ForkItemProps) {
   const handleUserClick = () => {
     window.open(`https://github.com/${fork.username}`, "_blank")
   }
 
   const handleCommitClick = () => {
     if (fork.commitHash) {
-      window.open(`https://github.com/${repoName}/commit/${fork.commitHash}`, "_blank")
+      window.open(`https://github.com/${fork.repoOwner}/${fork.repoName}/commit/${fork.commitHash}`, "_blank")
     }
   }
 
   return (
-    <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors">
-      <div className="flex items-center gap-2">
-        <UserAvatar username={fork.username} onClick={handleUserClick} />
-        <div>
+    <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
+      <UserAvatar username={fork.username} onClick={handleUserClick} />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
           <button
             onClick={handleUserClick}
-            className="text-xs font-medium hover:text-blue-600 hover:underline transition-colors"
+            className="text-xs font-medium truncate hover:text-blue-600 hover:underline transition-colors"
           >
             {fork.username}
           </button>
-          <p className="text-xs text-muted-foreground">{fork.totalCommits} commits</p>
+          <span className="text-xs text-muted-foreground">{fork.totalCommits} commits</span>
         </div>
-      </div>
-      <div className="text-right text-xs">
-        <p className="text-muted-foreground">forked {fork.forkedAgo}</p>
-        {fork.commitHash ? (
-          <div className="flex items-center gap-1 justify-end mt-1">
-            <button onClick={handleCommitClick} className="hover:bg-muted transition-colors">
-              <Badge variant="outline" className="text-xs h-4 px-1 hover:border-blue-500">
-                <GitCommit className="h-2 w-2 mr-1" />
-                {fork.commitHash}
-              </Badge>
-            </button>
-            <span className="text-muted-foreground">{fork.commitAgo}</span>
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-1">
+            {fork.commitHash && (
+              <button onClick={handleCommitClick} className="hover:bg-muted transition-colors">
+                <Badge variant="outline" className="text-xs h-4 px-1 hover:border-blue-500">
+                  <GitCommit className="h-2 w-2 mr-1" />
+                  {fork.commitHash}
+                </Badge>
+              </button>
+            )}
           </div>
-        ) : (
-          <p className="text-muted-foreground mt-1">no commits</p>
+          <div className="text-xs text-muted-foreground text-right">
+            <div>forked {fork.forkedAgo}</div>
+            {fork.commitAgo && <div>{fork.commitAgo}</div>}
+          </div>
+        </div>
+        {!fork.commitHash && (
+          <div className="text-xs text-muted-foreground mt-1">no commits</div>
         )}
       </div>
     </div>

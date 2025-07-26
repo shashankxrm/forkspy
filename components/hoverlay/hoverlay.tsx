@@ -18,10 +18,12 @@ interface HoverlayProps {
       contributors: Array<{
         username: string
         avatar: string
-        commitHash: string
+        commitHash: string | null
         prNumber: number | null
-        timeAgo: string
+        timeAgo: string | null
         totalCommits: number
+        repoOwner: string
+        repoName: string
       }>
     }
     recentForks: Array<{
@@ -31,6 +33,8 @@ interface HoverlayProps {
       forkedAgo: string
       commitHash: string | null
       commitAgo: string | null
+      repoOwner: string
+      repoName: string
     }>
   }
   triggerRef: React.RefObject<HTMLDivElement>
@@ -59,24 +63,50 @@ export function Hoverlay({ repo, triggerRef, isVisible, onClose, onMouseEnter, o
         height: window.innerHeight,
       }
 
+      const margin = 16 // Margin from screen edges
       let top = triggerRect.bottom + 8
       let left = triggerRect.left
       let placement = "bottom"
 
+      // Vertical positioning
       // Check if hoverlay would go off the bottom of the screen
-      if (top + hoverlayRect.height > viewport.height - 20) {
-        top = triggerRect.top - hoverlayRect.height - 8
-        placement = "top"
+      if (top + hoverlayRect.height > viewport.height - margin) {
+        // Try placing above the trigger
+        const topAbove = triggerRect.top - hoverlayRect.height - 8
+        if (topAbove >= margin) {
+          top = topAbove
+          placement = "top"
+        } else {
+          // If both above and below don't fit, place it in the best available space
+          const spaceBelow = viewport.height - triggerRect.bottom - margin
+          const spaceAbove = triggerRect.top - margin
+          
+          if (spaceBelow > spaceAbove) {
+            top = triggerRect.bottom + 8
+            placement = "bottom"
+          } else {
+            top = margin
+            placement = "top"
+          }
+        }
       }
 
+      // Horizontal positioning
       // Check if hoverlay would go off the right of the screen
-      if (left + hoverlayRect.width > viewport.width - 20) {
-        left = viewport.width - hoverlayRect.width - 20
+      if (left + hoverlayRect.width > viewport.width - margin) {
+        left = viewport.width - hoverlayRect.width - margin
       }
 
       // Check if hoverlay would go off the left of the screen
-      if (left < 20) {
-        left = 20
+      if (left < margin) {
+        left = margin
+      }
+
+      // Ensure top doesn't go negative or too far down
+      if (top < margin) {
+        top = margin
+      } else if (top + hoverlayRect.height > viewport.height - margin) {
+        top = viewport.height - hoverlayRect.height - margin
       }
 
       setPosition({ top, left, placement })
@@ -116,19 +146,17 @@ export function Hoverlay({ repo, triggerRef, isVisible, onClose, onMouseEnter, o
           {showFullForksList ? (
             <FullForksList
               recentForks={repo.recentForks}
-              repoName={repo.name}
               onBack={() => setShowFullForksList(false)}
             />
           ) : (
             <>
               {activeSection === "activity" && (
-                <ActivitySection recentActivity={repo.recentActivity} repoName={repo.name} />
+                <ActivitySection recentActivity={repo.recentActivity} />
               )}
 
               {activeSection === "forks" && (
                 <ForksSection
                   recentForks={repo.recentForks}
-                  repoName={repo.name}
                   onViewMore={() => setShowFullForksList(true)}
                 />
               )}

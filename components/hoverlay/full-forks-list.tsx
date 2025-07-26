@@ -11,12 +11,13 @@ interface FullForksListProps {
     forkedAgo: string
     commitHash: string | null
     commitAgo: string | null
+    repoOwner: string
+    repoName: string
   }>
-  repoName: string
   onBack: () => void
 }
 
-export function FullForksList({ recentForks, repoName, onBack }: FullForksListProps) {
+export function FullForksList({ recentForks, onBack }: FullForksListProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -27,7 +28,7 @@ export function FullForksList({ recentForks, repoName, onBack }: FullForksListPr
       </div>
       <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
         {recentForks.map((fork, index) => (
-          <ForkItem key={index} fork={fork} repoName={repoName} showFullDetails />
+          <ForkItem key={index} fork={fork} />
         ))}
       </div>
     </div>

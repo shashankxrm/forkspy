@@ -8,16 +8,17 @@ interface ActivitySectionProps {
     contributors: Array<{
       username: string
       avatar: string
-      commitHash: string
+      commitHash: string | null
       prNumber: number | null
-      timeAgo: string
+      timeAgo: string | null
       totalCommits: number
+      repoOwner: string
+      repoName: string
     }>
   }
-  repoName: string
 }
 
-export function ActivitySection({ recentActivity, repoName }: ActivitySectionProps) {
+export function ActivitySection({ recentActivity }: ActivitySectionProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -27,7 +28,7 @@ export function ActivitySection({ recentActivity, repoName }: ActivitySectionPro
 
       <div className="space-y-2">
         {recentActivity.contributors.map((contributor, index) => (
-          <ContributorItem key={index} contributor={contributor} repoName={repoName} />
+          <ContributorItem key={index} contributor={contributor} />
         ))}
       </div>
     </div>
