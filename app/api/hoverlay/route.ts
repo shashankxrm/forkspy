@@ -97,7 +97,7 @@ export async function GET(request: Request) {
     const recentActivity = {
       forksLast24h: forks.length, // This is an approximation; GitHub API doesn't provide 24h filter
       contributors: await Promise.all(
-        contributors.slice(0, 5).map(async (contributor: GitHubContributor) => {
+        contributors.slice(0, 10).map(async (contributor: GitHubContributor) => {
           // Fetch recent commits for this contributor from the source repository
           const commitsResponse = await fetch(
             `https://api.github.com/repos/${sourceOwner}/${sourceRepo}/commits?author=${contributor.login}&per_page=1`,
@@ -106,13 +106,15 @@ export async function GET(request: Request) {
 
           let commitHash: string | null = null;
           let timeAgo: string | null = null;
+          let lastCommitDate: Date | null = null;
           const prNumber: number | null = null;
 
           if (commitsResponse.ok) {
             const commits = await commitsResponse.json();
             if (commits.length > 0) {
               commitHash = commits[0].sha.substring(0, 7);
-              timeAgo = getTimeAgo(new Date(commits[0].commit.author.date));
+              lastCommitDate = new Date(commits[0].commit.author.date);
+              timeAgo = getTimeAgo(lastCommitDate);
             }
           }
 
@@ -125,14 +127,32 @@ export async function GET(request: Request) {
             totalCommits: contributor.contributions,
             repoOwner: sourceOwner,
             repoName: sourceRepo,
+            lastCommitDate, // For sorting
           };
         })
       ),
     };
 
+    // Sort contributors by most recent activity (last commit date)
+    recentActivity.contributors.sort((a, b) => {
+      if (!a.lastCommitDate && !b.lastCommitDate) return 0;
+      if (!a.lastCommitDate) return 1; // Move entries without commits to end
+      if (!b.lastCommitDate) return -1;
+      return b.lastCommitDate.getTime() - a.lastCommitDate.getTime(); // Most recent first
+    });
+
+    // Remove the sorting field and take only top 5
+    recentActivity.contributors = recentActivity.contributors
+      .slice(0, 5)
+      .map((contributor) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { lastCommitDate, ...contributorData } = contributor;
+        return contributorData;
+      });
+
     // Process forks data
     const recentForks = await Promise.all(
-      forks.slice(0, 20).map(async (fork: GitHubFork) => {
+      forks.slice(0, 30).map(async (fork: GitHubFork) => {
         // Get commits from this fork user to the source repository
         const userCommitsResponse = await fetch(
           `https://api.github.com/repos/${sourceOwner}/${sourceRepo}/commits?author=${fork.owner.login}&per_page=100`,
@@ -163,13 +183,26 @@ export async function GET(request: Request) {
           commitAgo,
           repoOwner: sourceOwner,
           repoName: sourceRepo,
+          forkCreatedAt: new Date(fork.created_at), // For sorting
         };
       })
     );
 
+    // Sort forks by most recent fork date
+    recentForks.sort((a, b) => b.forkCreatedAt.getTime() - a.forkCreatedAt.getTime());
+
+    // Remove the sorting field and take only top 20
+    const finalRecentForks = recentForks
+      .slice(0, 20)
+      .map((fork) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { forkCreatedAt, ...forkData } = fork;
+        return forkData;
+      });
+
     return NextResponse.json({
       recentActivity,
-      recentForks,
+      recentForks: finalRecentForks,
     });
 
   } catch (error) {
