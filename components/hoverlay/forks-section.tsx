@@ -7,6 +7,7 @@ import { ForkItem } from "./fork-item"
 interface ForksSectionProps {
   recentForks: Array<{
     username: string
+    avatar: string
     commits: number
     totalCommits: number
     forkedAgo: string

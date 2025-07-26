@@ -184,6 +184,7 @@ export async function GET(request: Request) {
 
         return {
           username: fork.owner.login,
+          avatar: `https://github.com/${fork.owner.login}.png`,
           commits: totalCommits, // This is now the total commits from this user to the source repo
           totalCommits: totalCommits,
           forkedAgo: getTimeAgo(new Date(fork.created_at)),

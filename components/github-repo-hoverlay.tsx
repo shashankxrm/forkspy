@@ -21,6 +21,7 @@ interface HoverlayData {
   }
   recentForks: Array<{
     username: string
+    avatar: string
     commits: number
     totalCommits: number
     forkedAgo: string

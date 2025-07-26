@@ -7,6 +7,7 @@ import { UserAvatar } from "./user-avatar"
 interface ForkItemProps {
   fork: {
     username: string
+    avatar: string
     commits: number
     totalCommits: number
     forkedAgo: string
@@ -30,7 +31,7 @@ export function ForkItem({ fork }: ForkItemProps) {
 
   return (
     <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
-      <UserAvatar username={fork.username} onClick={handleUserClick} />
+      <UserAvatar username={fork.username} avatar={fork.avatar} onClick={handleUserClick} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <button
