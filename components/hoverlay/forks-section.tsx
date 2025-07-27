@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
-import { ForkItem } from "./fork-item"
+import { ContributorItem } from "./contributor-item"
 
 interface ForksSectionProps {
   recentForks: Array<{
@@ -24,7 +24,19 @@ export function ForksSection({ recentForks, onViewMore }: ForksSectionProps) {
     <div className="space-y-3">
       <div className="space-y-2">
         {recentForks.slice(0, 5).map((fork, index) => (
-          <ForkItem key={index} fork={fork} />
+          <ContributorItem 
+            key={index} 
+            contributor={{
+              username: fork.username,
+              avatar: fork.avatar,
+              commitHash: fork.commitHash,
+              prNumber: null, // Forks don't have PR numbers
+              timeAgo: fork.forkedAgo,
+              totalCommits: fork.totalCommits,
+              repoOwner: fork.repoOwner,
+              repoName: fork.repoName,
+            }} 
+          />
         ))}
       </div>
 

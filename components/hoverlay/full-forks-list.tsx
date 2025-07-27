@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ForkItem } from "./fork-item"
+import { ContributorItem } from "./contributor-item"
 
 interface FullForksListProps {
   recentForks: Array<{
@@ -29,7 +29,19 @@ export function FullForksList({ recentForks, onBack }: FullForksListProps) {
       </div>
       <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
         {recentForks.map((fork, index) => (
-          <ForkItem key={index} fork={fork} />
+          <ContributorItem 
+            key={index} 
+            contributor={{
+              username: fork.username,
+              avatar: fork.avatar,
+              commitHash: fork.commitHash,
+              prNumber: null, // Forks don't have PR numbers
+              timeAgo: fork.forkedAgo,
+              totalCommits: fork.totalCommits,
+              repoOwner: fork.repoOwner,
+              repoName: fork.repoName,
+            }} 
+          />
         ))}
       </div>
     </div>
