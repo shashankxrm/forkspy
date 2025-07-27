@@ -36,7 +36,7 @@ export function FullForksList({ recentForks, onBack }: FullForksListProps) {
               avatar: fork.avatar,
               commitHash: fork.commitHash,
               prNumber: null, // Forks don't have PR numbers
-              timeAgo: fork.forkedAgo,
+              timeAgo: `forked ${fork.forkedAgo}`,
               totalCommits: fork.totalCommits,
               repoOwner: fork.repoOwner,
               repoName: fork.repoName,
