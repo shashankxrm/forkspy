@@ -58,7 +58,7 @@ export function ContributorItem({ contributor }: ContributorItemProps) {
               </button>
             )}
             {contributor.timeAgo && (
-              <span className="text-xs text-muted-foreground">{contributor.timeAgo}</span>
+              <span className="text-xs text-muted-foreground mt-[5px]">{contributor.timeAgo}</span>
             )}
             {contributor.prNumber && (
               <button onClick={handlePRClick} className="hover:bg-muted transition-colors">
