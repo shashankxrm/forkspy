@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 // Update paths to start from root
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { Header } from '@/components/Header';
@@ -51,7 +51,7 @@ export default function Dashboard() {
   const [isProcessing, setIsProcessing] = useState(false);
   const size = useWindowSize();
 
-  const fetchRepositories = async () => {
+  const fetchRepositories = useCallback(async () => {
     if (status !== 'authenticated' || !session?.accessToken) return;
     
     try {
@@ -82,7 +82,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [status, session]);
 
   useEffect(() => {
     setIsDarkMode(document.documentElement.classList.contains('dark'));
@@ -94,7 +94,7 @@ export default function Dashboard() {
     } else if (status === 'unauthenticated') {
       setLoading(true);
     }
-  }, [status, session]);
+  }, [status, session, fetchRepositories]);
 
   useEffect(() => {
     if (size.width && size.width >= 640) {

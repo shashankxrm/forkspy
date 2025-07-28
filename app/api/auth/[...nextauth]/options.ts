@@ -2,12 +2,27 @@ import type { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { MongoClient } from "mongodb";
 
-const clientId = process.env.GITHUB_ID;
-const clientSecret = process.env.GITHUB_SECRET;
+function getGitHubCredentials() {
+  const clientId = process.env.GITHUB_ID;
+  const clientSecret = process.env.GITHUB_SECRET;
 
-if (!clientId || !clientSecret) {
-  throw new Error("GITHUB_ID and GITHUB_SECRET must be set");
+  // During build time, allow missing credentials
+  if (process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === undefined) {
+    // This is a build process, not runtime
+    return {
+      clientId: clientId || 'build-placeholder',
+      clientSecret: clientSecret || 'build-placeholder'
+    };
+  }
+
+  if (!clientId || !clientSecret) {
+    throw new Error("GITHUB_ID and GITHUB_SECRET must be set");
+  }
+
+  return { clientId, clientSecret };
 }
+
+const { clientId, clientSecret } = getGitHubCredentials();
 
 export const authOptions: NextAuthOptions = {
   providers: [
