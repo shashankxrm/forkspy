@@ -8,7 +8,7 @@ describe('Auth Configuration', () => {
   it('should have environment variables set for testing', () => {
     expect(process.env.GITHUB_ID).toBe('test_github_id');
     expect(process.env.GITHUB_SECRET).toBe('test_github_secret');
-    expect(process.env.MONGO_URI).toBe('mongodb://localhost:27017/test');
+    expect(process.env.MONGO_URI).toBe('mongodb://localhost:27017/forkspy_test');
     expect(process.env.NEXTAUTH_SECRET).toBe('test_secret');
   });
 

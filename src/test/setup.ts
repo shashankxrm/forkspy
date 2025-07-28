@@ -1,13 +1,12 @@
 import '@testing-library/jest-dom'
 import { beforeEach, vi } from 'vitest'
 
-// Set up environment variables for tests
+// Environment variables for testing
 process.env.GITHUB_ID = 'test_github_id';
 process.env.GITHUB_SECRET = 'test_github_secret';
-process.env.MONGO_URI = 'mongodb://localhost:27017/test';
+process.env.MONGO_URI = 'mongodb://localhost:27017/forkspy_test';
 process.env.NEXTAUTH_SECRET = 'test_secret';
 process.env.NEXTAUTH_URL = 'http://localhost:3000';
-process.env.NODE_ENV = 'test';
 
 // Global test setup
 beforeEach(() => {
