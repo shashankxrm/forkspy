@@ -3,10 +3,19 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const client = new MongoClient(process.env.MONGO_URI!);
+function getMongoClient() {
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGO_URI environment variable is not set");
+  }
+  return new MongoClient(mongoUri);
+}
+
 const dbName = "forkspy";
 
 export async function GET() {
+  let client: MongoClient | null = null;
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -17,6 +26,7 @@ export async function GET() {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
+    client = getMongoClient();
     await client.connect();
     const db = client.db(dbName);
     const collection = db.collection("repositories");
@@ -37,6 +47,8 @@ export async function GET() {
     console.error("Error fetching repositories:", error);
     return NextResponse.json({ error: "Failed to fetch repositories" }, { status: 500 });
   } finally {
-    await client.close();
+    if (client) {
+      await client.close();
+    }
   }
 }

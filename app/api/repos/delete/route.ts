@@ -3,10 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const client = new MongoClient(process.env.MONGO_URI!);
+function getMongoClient() {
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGO_URI environment variable is not set");
+  }
+  return new MongoClient(mongoUri);
+}
+
 const dbName = "forkspy";
 
 export async function DELETE(req: NextRequest) {
+  let client: MongoClient | null = null;
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -22,6 +31,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Connect to MongoDB
+    client = getMongoClient();
     await client.connect();
     const db = client.db(dbName);
 
@@ -126,6 +136,8 @@ export async function DELETE(req: NextRequest) {
     console.error('Error deleting repository:', error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   } finally {
-    await client.close();
+    if (client) {
+      await client.close();
+    }
   }
 }

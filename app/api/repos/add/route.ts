@@ -3,10 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-const client = new MongoClient(process.env.MONGO_URI!);
+function getMongoClient() {
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGO_URI environment variable is not set");
+  }
+  return new MongoClient(mongoUri);
+}
+
 const dbName = "forkspy";
 
 export async function POST(req: NextRequest) {
+  let client: MongoClient | null = null;
+  
   try {
     const session = await getServerSession(authOptions);
     
@@ -78,6 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Connect to MongoDB
+    client = getMongoClient();
     await client.connect();
     const db = client.db(dbName);
 
@@ -97,11 +107,13 @@ export async function POST(req: NextRequest) {
     
     // Normalize the webhook URL to ensure HTTPS
     let webhookUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    if (!webhookUrl.startsWith('http')) {
+    if (webhookUrl && !webhookUrl.startsWith('http')) {
       webhookUrl = `https://${webhookUrl}`;
     }
     // Remove trailing slash if present
-    webhookUrl = webhookUrl.replace(/\/$/, '');
+    if (webhookUrl) {
+      webhookUrl = webhookUrl.replace(/\/$/, '');
+    }
     console.log('Webhook URL:', webhookUrl);
 
     // Skip webhook creation in development mode
@@ -203,5 +215,9 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error adding repository:", error);
     return NextResponse.json({ error: "Failed to add repository" }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
   }
 }

@@ -2,20 +2,25 @@ import { MongoClient } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from 'resend';
 
-// Validate environment variables
-if (!process.env.MONGO_URI) {
-  throw new Error('MONGO_URI is not defined');
+function getMongoClient() {
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGO_URI environment variable is not set");
+  }
+  return new MongoClient(mongoUri, {
+    connectTimeoutMS: 10000, // 10 seconds
+    serverSelectionTimeoutMS: 5000, // 5 seconds
+    socketTimeoutMS: 45000,  // 45 seconds
+  });
 }
 
-const client = new MongoClient(process.env.MONGO_URI, {
-  connectTimeoutMS: 10000, // 10 seconds
-  socketTimeoutMS: 45000,  // 45 seconds
-});
 const dbName = "forkspy";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   let db;
+  let client: MongoClient | null = null;
+  
   try {
     try {
       console.log('========= WEBHOOK EVENT RECEIVED =========');
@@ -47,6 +52,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: 'ignored', reason: 'Not a fork event' });
       }
 
+      client = getMongoClient();
       await client.connect();
       db = client.db(dbName);
       
@@ -152,7 +158,11 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     } finally {
       if (client) {
-        await client.close();
+        try {
+          await client.close();
+        } catch (closeError) {
+          console.error('Error closing MongoDB connection:', closeError);
+        }
       }
     }
   } catch (error) {
