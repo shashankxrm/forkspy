@@ -24,7 +24,10 @@
     <a href="mailto:shashankreddy0608@gmail.com">Request Feature</a>
     <br />
     <br />
-    <!-- <img src="https://github.com/shashankxrm/forkspy/actions/workflows/playwright.yml/badge.svg" alt="Playwright Tests" /> -->
+    <img src="https://github.com/shashankxrm/forkspy/actions/workflows/test.yml/badge.svg" alt="CI/CD Pipeline" />
+    <img src="https://codecov.io/gh/shashankxrm/forkspy/branch/main/graph/badge.svg" alt="Coverage" />
+    <img src="https://img.shields.io/github/license/shashankxrm/forkspy" alt="License" />
+    <img src="https://img.shields.io/github/stars/shashankxrm/forkspy" alt="Stars" />
   </p>
 </div>
 
@@ -100,13 +103,14 @@ To get a local copy follow these simple example steps.
 
 
 <!-- TESTING -->
-## Testing (Undergoing changes)
+## Testing
 
-ForkSpy has a comprehensive test suite using Playwright for end-to-end testing. Tests cover:
+ForkSpy has a comprehensive test suite using Vitest for unit testing and React Testing Library for component testing. Tests cover:
 
-* Authentication flows
-* Dashboard functionality
-* Repository management
+* Utility functions
+* Custom hooks
+* API routes
+* Component behavior
 * Error handling
 
 ### Running Tests Locally
@@ -115,21 +119,31 @@ ForkSpy has a comprehensive test suite using Playwright for end-to-end testing. 
 # Install dependencies
 npm install
 
-# Run the tests
-npx playwright test
+# Run tests once
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests with UI
+npm run test:ui
 ```
 
 ### CI/CD
 
 We use GitHub Actions for continuous integration. Every pull request and push to the main branch triggers:
 
-1. Application build
-2. Automated test runs across multiple browsers
-3. Test report generation
+1. **Test Suite** - All unit and integration tests
+2. **Linting** - Code quality checks with ESLint
+3. **Build** - Application build verification
+4. **Coverage** - Test coverage reporting
 
-The test badge at the top of this README shows the current test status for the main branch.
+The CI/CD badge at the top of this README shows the current pipeline status for the main branch.
 
-To see detailed test reports, check the "Actions" tab in the GitHub repository.
+To see detailed test reports and coverage, check the "Actions" tab in the GitHub repository.
 
 
 
