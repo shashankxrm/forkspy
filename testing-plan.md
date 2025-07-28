@@ -2,7 +2,85 @@
 
 Based on my analysis of your codebase, here's a comprehensive plan to add Vitest testing to your Next.js application:
 
-## 📋 **Project Overview**
+## � **Docker Integration Strategy**
+
+### **Why Docker First Approach?**
+1. **Environment Consistency**: Identical dev/test/prod environments
+2. **Database Reliability**: Real MongoDB for integration tests
+3. **CI/CD Enhancement**: Container-based workflows
+4. **Team Onboarding**: Single `docker-compose up` setup
+5. **Scaling Preparation**: Ready for Kubernetes deployment
+
+### **Docker Architecture**
+```
+forkspy/
+├── Dockerfile (Multi-stage production build)
+├── Dockerfile.dev (Development optimized)
+├── docker-compose.yml (Production stack)
+├── docker-compose.dev.yml (Development stack)
+├── docker-compose.test.yml (Testing stack)
+├── .dockerignore
+└── docker/
+    ├── mongodb/
+    │   ├── init-scripts/
+    │   └── mongod.conf
+    ├── nginx/
+    │   └── nginx.conf
+    └── scripts/
+        ├── wait-for-it.sh
+        └── health-check.sh
+```
+
+### **Development Workflow with Docker**
+```bash
+# Development
+docker-compose -f docker-compose.dev.yml up
+
+# Testing
+docker-compose -f docker-compose.test.yml up --build
+docker-compose -f docker-compose.test.yml exec app npm test
+
+# Production build
+docker-compose up --build
+```
+
+### **Enhanced CI/CD with Containers**
+```yaml
+name: Docker CI/CD Pipeline
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build test image
+        run: docker build -f Dockerfile.dev -t forkspy:test .
+      - name: Run tests in container
+        run: |
+          docker run --network host \
+            -e MONGO_URI=mongodb://admin:password@localhost:27017/forkspy_test \
+            forkspy:test npm test
+  
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t forkspy:latest .
+      - name: Push to registry
+        # ... registry push logic
+```
+
+## �📋 **Project Overview**
 Your ForkSpy application is a Next.js app that tracks GitHub repository forks with the following key features:
 - GitHub OAuth authentication via NextAuth
 - Repository tracking and management
@@ -337,22 +415,98 @@ RESEND_API_KEY=test_resend_key
 - [x] Write basic API route tests (repos/get) - **4/4 tests passing**
 - [x] Setup TypeScript compliance for all tests
 - [x] Fix all ESLint/TypeScript errors in test files
-- [~] Test custom hooks (`useWindowSize`) - *Deferred due to complex environment mocking*
+- [x] Test custom hooks (`useWindowSize`) - **3/3 tests passing**
 - [ ] Update CI/CD with coverage thresholds
 
 **Phase 3 Status: COMPLETE ✅**
-- **Total Tests**: 18 passing (4 test files)
-- **Test Categories**: Utilities, Authentication Logic, Repository Logic, Custom Hooks
+
+### Phase 3.5 Tasks (Dockerization):
+- [ ] Create multi-stage Dockerfile for production builds
+- [ ] Setup docker-compose.yml for full application stack
+- [ ] Create docker-compose.dev.yml for development environment
+- [ ] Create docker-compose.test.yml for isolated testing
+- [ ] Update GitHub Actions to use Docker containers
+- [ ] Setup MongoDB container with initialization scripts
+- [ ] Configure environment variable management for containers
+- [ ] Add container health checks and monitoring
+- [ ] Create .dockerignore and optimize build contexts
+- [ ] Document Docker development workflow
+
+**Phase 3.5 Benefits for Testing:**
+- Consistent test environments across all machines
+- Real MongoDB integration tests (vs memory server)
+- Parallel test execution in isolated containers
+- Enhanced CI/CD reliability with container-based workflows
+- **Total Tests**: 21 passing (5 test files)
+- **Test Categories**: Utilities, Authentication Logic, Repository Logic, Custom Hooks (both useRequireAuth & useWindowSize)
 - **TypeScript Compliance**: All tests properly typed with no 'any' violations
-- **Execution Time**: <2 seconds for full test suite
+- **Execution Time**: 1.60 seconds for full test suite
 - **Coverage**: High coverage on tested modules
 
-### Phase 4 Tasks (Expand Testing):
-- [ ] Install additional dependencies (MSW, MongoDB Memory Server)
-- [ ] Setup comprehensive API mocking
-- [ ] Write full API route test suite
-- [ ] Add parallel test execution to CI/CD
-- [ ] Setup test matrix for multiple environments
+### Phase 3.5: Dockerization & Container Strategy (Week 3)**
+
+**🐳 Strategic Goal**: Containerize ForkSpy before expanding test suite for consistent environments
+
+1. **Application Dockerization**
+   ```dockerfile
+   # Multi-stage build for production optimization
+   # Development vs Production containers
+   # Environment variable management
+   ```
+
+2. **Database Containerization**
+   ```yaml
+   # Docker Compose for MongoDB
+   # Test database isolation
+   # Data persistence strategies
+   ```
+
+3. **Development Environment**
+   ```yaml
+   # docker-compose.dev.yml - Development stack
+   # Hot reload support
+   # Volume mounting for live development
+   ```
+
+4. **Testing Environment Enhancement**
+   ```yaml
+   # docker-compose.test.yml - Testing stack
+   # Isolated test databases
+   # Parallel test execution containers
+   ```
+
+5. **CI/CD Integration**
+   ```yaml
+   # GitHub Actions with Docker
+   # Container-based testing
+   # Multi-stage builds
+   # Container registry integration
+   ```
+
+**Phase 3.5 Benefits for Testing:**
+- **Consistent Test Environment**: Same Node.js, MongoDB versions everywhere
+- **Database Testing**: Real MongoDB for integration tests vs memory server
+- **Parallel Testing**: Multiple isolated containers
+- **CI/CD Reliability**: No environment drift issues
+- **Easy Setup**: New developers get consistent environment
+
+**Phase 3.5 Deliverables:**
+- [ ] Multi-stage Dockerfile for production builds
+- [ ] docker-compose.yml for full application stack
+- [ ] docker-compose.dev.yml for development
+- [ ] docker-compose.test.yml for testing environment
+- [ ] Updated GitHub Actions to use containers
+- [ ] Environment variable management strategy
+- [ ] Database initialization scripts
+- [ ] Container health checks and monitoring
+
+### Phase 4 Tasks (Expand Testing + Enhanced CI/CD):
+- [ ] Install additional dependencies (MSW, MongoDB Memory Server) - *Now with Docker integration*
+- [ ] Setup comprehensive API mocking with containerized testing
+- [ ] Write full API route test suite with real MongoDB containers
+- [ ] Add parallel test execution using Docker containers
+- [ ] Setup test matrix for multiple environments (Node.js versions in containers)
+- [ ] Integration tests with full Docker stack
 
 ### Phase 5 Tasks (Component Testing):
 - [ ] Setup React Testing Library
