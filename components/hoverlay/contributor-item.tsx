@@ -36,7 +36,7 @@ export function ContributorItem({ contributor }: ContributorItemProps) {
 
   return (
     <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
-      <UserAvatar username={contributor.username} avatar={contributor.avatar} onClick={handleUserClick}  size="lg" />
+      <UserAvatar username={contributor.username} avatar={contributor.avatar} onClick={handleUserClick}  size="md" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <button

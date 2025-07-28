@@ -24,7 +24,7 @@
     <a href="mailto:shashankreddy0608@gmail.com">Request Feature</a>
     <br />
     <br />
-    <img src="https://github.com/shashankxrm/forkspy/actions/workflows/playwright.yml/badge.svg" alt="Playwright Tests" />
+    <!-- <img src="https://github.com/shashankxrm/forkspy/actions/workflows/playwright.yml/badge.svg" alt="Playwright Tests" /> -->
   </p>
 </div>
 
