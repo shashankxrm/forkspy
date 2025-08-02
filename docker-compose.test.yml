@@ -1,0 +1,23 @@
+# Testing Docker Compose configuration for ForkSpy
+# This creates an isolated environment for running tests
+
+services:
+  # Test Runner Service
+  test-runner:
+    image: forkspy-app:latest  # Use existing image
+    container_name: forkspy-test-runner
+    environment:
+      - NODE_ENV=test
+      - MONGO_URI=${MONGO_URI:-mongodb://localhost:27017/forkspy-test}
+      - GITHUB_ID=test_github_id
+      - GITHUB_SECRET=test_github_secret
+      - NEXTAUTH_SECRET=test_secret_for_testing_only
+      - NEXTAUTH_URL=http://localhost:3000
+      - RESEND_API_KEY=test_resend_key
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./test-results:/app/test-results
+      - ./coverage:/app/coverage
+    command: ["npm", "run", "test"]

@@ -7,6 +7,7 @@ This guide provides comprehensive instructions for developing ForkSpy using Dock
 ForkSpy uses Docker to provide a consistent development environment across different machines and operating systems. The Docker setup includes:
 
 - **Development Container**: Hot reloading, volume mounting, and development optimizations
+- **Testing Container**: Isolated test environment with consistent results
 - **Environment Variables**: Uses your local `.env` file for configuration
 - **MongoDB Atlas**: Connects to cloud database (no local database setup needed)
 
@@ -22,6 +23,7 @@ ForkSpy uses Docker to provide a consistent development environment across diffe
 forkspy/
 ├── Dockerfile.dev              # Development container definition
 ├── docker-compose.dev.yml      # Development orchestration
+├── docker-compose.test.yml     # Testing environment (Phase 2)
 ├── .dockerignore              # Files to exclude from Docker builds
 ├── .env                       # Environment variables (copy from .env.local)
 └── DOCKER.md                  # This file
@@ -61,14 +63,18 @@ docker-compose -f docker-compose.dev.yml up
 ```bash
 # Development
 npm run docker:dev              # Start development environment
-npm run docker:stop             # Stop all containers
-
-# Building
 npm run docker:dev:build        # Build development image
+npm run docker:dev:detached     # Start in background
+npm run docker:stop             # Stop development containers
 
-# Debugging
+# Testing (Phase 2)
+npm run docker:test             # Run all tests in containers
+npm run docker:test:down        # Stop test containers
+
+# Utilities
 docker ps                       # List running containers
 docker logs forkspy-app         # View application logs
+docker logs forkspy-test-runner # View test logs  
 docker exec -it forkspy-app sh  # Access container shell
 ```
 
@@ -201,6 +207,67 @@ NODE_ENV=development
    # Verify variables inside container
    docker exec forkspy-app env | grep GITHUB_ID
    ```
+
+5. **npm commands not working (networking issues)**
+   ```bash
+   # This error usually indicates orphaned Docker networks:
+   # "Error response from daemon: failed to set up container networking"
+   
+   # Solution: Clean up orphaned networks and containers
+   npm run docker:stop              # or docker-compose -f docker-compose.dev.yml down
+   docker network prune -f          # Remove orphaned networks
+   docker system prune -f           # Remove unused containers/images
+   
+   # Then try again
+   npm run docker:dev
+   ```
+
+### Prevention & Best Practices
+
+**Always use proper cleanup commands instead of forceful termination:**
+
+```bash
+# ✅ GOOD - Proper cleanup
+npm run docker:stop              # Gracefully stop development containers
+npm run docker:test:down         # Clean up test containers
+
+# ❌ AVOID - These can leave orphaned networks
+# Ctrl+C (while containers are starting)
+# Force killing Docker processes
+# Changing docker-compose files without cleanup
+```
+
+**Regular maintenance commands:**
+
+```bash
+# Weekly cleanup (removes unused resources)
+docker system prune -f
+
+# Remove all stopped containers
+docker container prune -f
+
+# Remove unused networks
+docker network prune -f
+
+# Remove unused volumes (be careful with data!)
+docker volume prune -f
+
+# See what's taking up space
+docker system df
+```
+
+**Debugging networking issues:**
+
+```bash
+# List all networks
+docker network ls
+
+# Inspect a specific network
+docker network inspect <network_name>
+
+# List running containers and their networks
+docker ps --format "table {{.Names}}\t{{.Networks}}\t{{.Status}}"
+```
 
 ### Performance Tips
 

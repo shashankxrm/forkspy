@@ -16,7 +16,10 @@
     "docker:dev:detached": "docker-compose -f docker-compose.dev.yml up -d",
     "docker:stop": "docker-compose -f docker-compose.dev.yml down",
     "docker:logs": "docker logs forkspy-app",
-    "docker:shell": "docker exec -it forkspy-app sh"
+    "docker:shell": "docker exec -it forkspy-app sh",
+    "docker:test": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
+    "docker:test:watch": "docker-compose -f docker-compose.test.yml --profile watch up",
+    "docker:test:down": "docker-compose -f docker-compose.test.yml down"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",
