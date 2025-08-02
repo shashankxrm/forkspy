@@ -1,0 +1,19 @@
+services:
+  app:
+    image: forkspy-app:latest  # Use existing image
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.dev
+    container_name: forkspy-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

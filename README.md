@@ -48,6 +48,7 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#testing">Testing</a></li>
+    <li><a href="#docker">Docker Development</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -145,6 +146,76 @@ The CI/CD badge at the top of this README shows the current pipeline status for 
 
 To see detailed test reports and coverage, check the "Actions" tab in the GitHub repository.
 
+
+<!-- DOCKER -->
+## Docker Development
+
+ForkSpy supports Docker for development, making it easy to run the application in a consistent environment without worrying about local dependencies.
+
+### Prerequisites
+
+- Docker Desktop (recommended) or Docker Engine
+- Docker Compose v2.0+
+
+### Quick Start with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/shashankxrm/forkspy.git
+   cd forkspy
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.local .env
+   # Edit .env with your actual values (GitHub OAuth, MongoDB, etc.)
+   ```
+
+3. **Start the development environment**
+   ```bash
+   npm run docker:dev
+   ```
+
+4. **Access the application**
+   - Open http://localhost:3000 in your browser
+   - The application will automatically reload when you make code changes
+
+### Docker Commands
+
+```bash
+# Start development environment
+npm run docker:dev
+
+# Build Docker image
+npm run docker:dev:build
+
+# Stop all containers
+npm run docker:stop
+
+# View running containers
+docker ps
+
+# View application logs
+docker logs forkspy-app
+```
+
+### Features
+
+- **Hot Reloading**: Code changes are automatically reflected in the browser
+- **Volume Mounting**: Your local code is mounted into the container for development
+- **Environment Variables**: Uses your local `.env` file for configuration
+- **MongoDB Atlas**: Connects to your MongoDB Atlas cluster (no local database needed)
+
+### Troubleshooting
+
+If you encounter issues:
+
+1. **Port conflicts**: Make sure port 3000 is not in use by other applications
+2. **Environment variables**: Ensure your `.env` file has all required variables
+3. **Docker daemon**: Make sure Docker Desktop is running
+4. **Clean rebuild**: Run `npm run docker:dev:build` to rebuild the image
+
+For more detailed Docker documentation, see [DOCKER.md](./DOCKER.md).
 
 
 <!-- CONTRIBUTING -->
