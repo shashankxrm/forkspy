@@ -39,9 +39,9 @@ jobs:
             -e GITHUB_CLIENT_ID=test_client_id \
             -e GITHUB_CLIENT_SECRET=test_client_secret \
             -e NEXTAUTH_SECRET=test_secret_for_testing_only \
-            -e NEXTAUTH_URL=http://localhost:3000 \
+            -e NEXTAUTH_URL=http://localhost:3001 \
             -e RESEND_API_KEY=test_resend_key \
-            -e NEXT_PUBLIC_APP_URL=http://localhost:3000 \
+            -e NEXT_PUBLIC_APP_URL=http://localhost:3001 \
             forkspy-test:latest || TEST_EXIT_CODE=$?
 
           # Copy results regardless of test outcome
@@ -225,19 +225,26 @@ jobs:
             -e PORT=3000 \
             -e HOSTNAME=0.0.0.0 \
             -e NEXTAUTH_SECRET=test_secret \
-            -e NEXTAUTH_URL=http://localhost:3000 \
+            -e NEXTAUTH_URL=http://localhost:3001 \
             -e GITHUB_CLIENT_ID=test_client \
             -e GITHUB_CLIENT_SECRET=test_secret \
             -e MONGODB_URI=mongodb://localhost:27017/test \
             -e RESEND_API_KEY=test_key \
-            -p 3000:3000 \
+            -p 3001:3000 \
             forkspy-build-test:latest
 
           # Wait for container to start
-          sleep 10
+          sleep 15
 
-          # Test health endpoint
-          docker exec test-container curl -f http://localhost:3000/api/health || exit 1
+          # Test health endpoint using the built-in healthcheck script
+          docker exec test-container node healthcheck.js || exit 1
+
+          # Alternative: Check if the container is running and healthy
+          if [ "$(docker inspect -f '{{.State.Running}}' test-container)" != "true" ]; then
+            echo "Container is not running"
+            docker logs test-container
+            exit 1
+          fi
 
           # Cleanup
           docker stop test-container

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Health check script for Docker container
 
-const http = require('http');
+import http from 'http';
 
 const options = {
   hostname: 'localhost',

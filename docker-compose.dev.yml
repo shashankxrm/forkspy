@@ -6,7 +6,7 @@ services:
     #   dockerfile: Dockerfile.dev
     container_name: forkspy-app
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - .:/app
       - /app/node_modules

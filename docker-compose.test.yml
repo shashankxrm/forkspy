@@ -12,9 +12,9 @@ services:
       - GITHUB_ID=test_github_id
       - GITHUB_SECRET=test_github_secret
       - NEXTAUTH_SECRET=test_secret_for_testing_only
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://localhost:3001
       - RESEND_API_KEY=test_resend_key
-      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3001
     volumes:
       - .:/app
       - /app/node_modules
