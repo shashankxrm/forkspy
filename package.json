@@ -24,7 +24,11 @@
     "docker:prod:build": "docker-compose build --no-cache",
     "docker:prod:logs": "docker-compose logs -f",
     "docker:prod:down": "docker-compose down",
-    "docker:prod:proxy": "docker-compose --profile proxy up -d"
+    "docker:prod:proxy": "docker-compose --profile proxy up -d",
+    "ci:docker:build": "docker build -t forkspy-ci:latest .",
+    "ci:docker:test": "docker run --rm -e NODE_ENV=test forkspy-ci:latest npm run test:coverage",
+    "ci:docker:security": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image forkspy-ci:latest",
+    "ci:docker:push": "docker push $npm_config_registry/forkspy:latest"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",

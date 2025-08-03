@@ -135,12 +135,20 @@ npm run test:ui
 
 ### CI/CD
 
-We use GitHub Actions for continuous integration. Every pull request and push to the main branch triggers:
+We use GitHub Actions for continuous integration with comprehensive Docker integration. Every pull request and push to the main branch triggers:
 
-1. **Test Suite** - All unit and integration tests
-2. **Linting** - Code quality checks with ESLint
-3. **Build** - Application build verification
-4. **Coverage** - Test coverage reporting
+1. **Docker-based Testing** - All tests run in containerized environment
+2. **Multi-platform Builds** - Images built for linux/amd64 and linux/arm64
+3. **Security Scanning** - Trivy vulnerability scanner and Docker Scout
+4. **Container Registry** - Automatic image publishing to GitHub Container Registry
+5. **Health Validation** - Container startup and endpoint testing
+
+**Enhanced CI/CD Pipeline Features:**
+- 🐳 **Container Testing**: All tests execute in Docker for production parity
+- 🔒 **Security Scanning**: Automated vulnerability detection with Trivy
+- 📦 **Multi-platform**: ARM64 and AMD64 architecture support
+- 🏷️ **Image Registry**: Automated publishing to ghcr.io
+- ✅ **Health Checks**: Comprehensive container validation
 
 The CI/CD badge at the top of this README shows the current pipeline status for the main branch.
 
@@ -150,11 +158,12 @@ To see detailed test reports and coverage, check the "Actions" tab in the GitHub
 <!-- DOCKER -->
 ## Docker Development & Production
 
-ForkSpy provides complete Docker integration across three phases:
+ForkSpy provides complete Docker integration across four phases:
 
 **✅ Phase 1 - Development**: Local development environment with hot reloading  
 **✅ Phase 2 - Testing**: Dockerized test execution with full coverage validation  
 **✅ Phase 3 - Production**: Enterprise-grade production deployment with security hardening  
+**✅ Phase 4 - CI/CD Integration**: GitHub Actions with Docker builds, testing, and security scanning  
 
 ### Prerequisites
 
@@ -246,21 +255,27 @@ curl http://localhost:3000/api/health
 ### Docker Commands Reference
 
 ```bash
-# Development
+# Development (Phase 1)
 npm run docker:dev              # Start development environment
 npm run docker:dev:build        # Build development image
 npm run docker:stop             # Stop all containers
 
-# Testing  
+# Testing (Phase 2)
 npm run docker:test             # Run test suite in Docker
 npm run docker:test:coverage    # Run tests with coverage
 
-# Production
+# Production (Phase 3)
 docker-compose build            # Build production image
 docker-compose up -d            # Start production (detached)
 docker-compose ps               # Check container status
 docker-compose logs app         # View application logs
 docker stats forkspy-app-prod   # Monitor resource usage
+
+# CI/CD (Phase 4)
+npm run ci:docker:build         # Build CI image
+npm run ci:docker:test          # Run tests in container for CI
+npm run ci:docker:security      # Run security scanning
+npm run ci:docker:push          # Push image to registry
 ```
 
 ### Production Deployment Ready
@@ -288,7 +303,7 @@ If you encounter issues:
 4. **Clean rebuild**: Run `docker-compose build --no-cache` to rebuild from scratch
 5. **Production health**: Check `curl http://localhost:3000/api/health` for detailed status
 
-For detailed Docker documentation and advanced configurations, see [project.md](./project.md#-docker-production-setup-phase-3-complete).
+For detailed Docker documentation and advanced configurations, see [DOCKER-ROADMAP.md](./DOCKER-ROADMAP.md) for the complete Docker implementation phases.
 
 
 <!-- CONTRIBUTING -->
