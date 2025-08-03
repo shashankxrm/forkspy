@@ -19,7 +19,12 @@
     "docker:shell": "docker exec -it forkspy-app sh",
     "docker:test": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
     "docker:test:watch": "docker-compose -f docker-compose.test.yml --profile watch up",
-    "docker:test:down": "docker-compose -f docker-compose.test.yml down"
+    "docker:test:down": "docker-compose -f docker-compose.test.yml down",
+    "docker:prod": "docker-compose up -d",
+    "docker:prod:build": "docker-compose build --no-cache",
+    "docker:prod:logs": "docker-compose logs -f",
+    "docker:prod:down": "docker-compose down",
+    "docker:prod:proxy": "docker-compose --profile proxy up -d"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",

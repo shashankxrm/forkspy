@@ -6,7 +6,7 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
+# Remove package-lock.json from ignore list - we need it for builds
 
 # Next.js build output
 .next/
