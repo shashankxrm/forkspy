@@ -32,7 +32,8 @@ jobs:
 
       - name: Run tests in Docker
         run: |
-          docker run --rm \
+          # Run tests and capture the exit code
+          docker run --name test-run \
             -e NODE_ENV=test \
             -e MONGODB_URI=${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/forkspy-test' }} \
             -e GITHUB_CLIENT_ID=test_client_id \
@@ -41,9 +42,17 @@ jobs:
             -e NEXTAUTH_URL=http://localhost:3000 \
             -e RESEND_API_KEY=test_resend_key \
             -e NEXT_PUBLIC_APP_URL=http://localhost:3000 \
-            -v ${{ github.workspace }}/coverage:/app/coverage \
-            -v ${{ github.workspace }}/test-results:/app/test-results \
-            forkspy-test:latest
+            forkspy-test:latest || TEST_EXIT_CODE=$?
+
+          # Copy results regardless of test outcome
+          docker cp test-run:/app/coverage ./coverage || echo "No coverage directory found"
+          docker cp test-run:/app/test-results ./test-results || echo "No test-results directory found"
+          
+          # Clean up container
+          docker rm test-run
+          
+          # Exit with the same code as the tests
+          exit ${TEST_EXIT_CODE:-0}
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
