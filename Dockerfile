@@ -62,7 +62,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy health check script
-COPY --from=builder /app/healthcheck.js ./healthcheck.js
+COPY --from=builder /app/healthcheck.mjs ./healthcheck.mjs
 
 # Switch to non-root user
 USER nextjs
@@ -75,7 +75,7 @@ ENV HOSTNAME="0.0.0.0"
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD node healthcheck.mjs
 
 # Start the application
 CMD ["npm", "start"]

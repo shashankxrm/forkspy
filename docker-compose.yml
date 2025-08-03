@@ -22,7 +22,7 @@ services:
     networks:
       - forkspy-network
     healthcheck:
-      test: ["CMD", "node", "healthcheck.js"]
+      test: ["CMD", "node", "healthcheck.mjs"]
       interval: 30s
       timeout: 10s
       retries: 3

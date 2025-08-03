@@ -237,7 +237,7 @@ jobs:
           sleep 15
 
           # Test health endpoint using the built-in healthcheck script
-          docker exec test-container node healthcheck.js || exit 1
+          docker exec test-container node healthcheck.mjs || exit 1
 
           # Alternative: Check if the container is running and healthy
           if [ "$(docker inspect -f '{{.State.Running}}' test-container)" != "true" ]; then
