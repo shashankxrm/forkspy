@@ -33,7 +33,12 @@ describe('Repository API Logic', () => {
       createdAt: new Date('2024-01-01')
     };
 
-    const transformRepo = (repo: { _id: { toString: () => string }; [key: string]: unknown }) => ({
+    const transformRepo = (repo: { 
+      _id: { toString: () => string }; 
+      repoUrl: string;
+      userEmail: string;
+      [key: string]: unknown;
+    }) => ({
       ...repo,
       _id: repo._id.toString(),
     });
